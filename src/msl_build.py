@@ -15,14 +15,14 @@ SRC_DIR = SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_SRC_DIR = os.path.normpath(os.path.join(SCRIPT_DIR, os.pardir, os.pardir))
 PROJECT_ROOT_DIR = os.path.normpath(os.path.join(PROJECT_SRC_DIR, os.pardir))
 
-ZORRO_DIR = os.path.join(SRC_DIR, 'zorro')
+MSL_DIR = os.path.join(SRC_DIR, 'sdk', 'msl')
 OUTPUT_DIR = os.path.join(SRC_DIR, 'out')
 ENABLED_ARCHS = ['arm64', 'arm', 'x64']
 DEFAULT_ARCHS = ['arm64', 'arm']
-MAC_SDK_BUILD_SCRIPT = SRC_DIR + "/tools_ms/mac/build_mac_libs.sh"
-IOS_SDK_BUILD_SCRIPT = SRC_DIR + "/tools_ms/ios/build_ios_libs.sh"
-ANDROID_SDK_BUILD_SCRIPT = SRC_DIR + "/tools_ms/android/build_aar.sh"
-LINUX_SDK_BUILD_SCRIPT = SRC_DIR + "/tools_ms/linux/build_linux_libs.sh"
+MAC_SDK_BUILD_SCRIPT = SRC_DIR + "/tools_msl/mac/build_mac_libs.sh"
+IOS_SDK_BUILD_SCRIPT = SRC_DIR + "/tools_msl/ios/build_ios_libs.sh"
+ANDROID_SDK_BUILD_SCRIPT = SRC_DIR + "/tools_msl/android/build_aar.sh"
+LINUX_SDK_BUILD_SCRIPT = SRC_DIR + "/tools_msl/linux/build_linux_libs.sh"
 
 def clean_artifacts(output_dir):
     if os.path.isdir(output_dir):
@@ -95,7 +95,7 @@ def main():
     print("\033[32m SRC_DIR: \033[0m" + SRC_DIR)
     print("\033[32m PROJECT_SRC_DIR: \033[0m" + PROJECT_SRC_DIR)
     print("\033[32m PROJECT_ROOT_DIR: \033[0m" + PROJECT_ROOT_DIR)
-    print("\033[32m ZORRO_DIR: \033[0m" + ZORRO_DIR)
+    print("\033[32m ZORRO_DIR: \033[0m" + MSL_DIR)
     print("\033[32m OUTPUT_DIR: \033[0m" + OUTPUT_DIR)
     start_sec = time.time()
     args = parse_args()
