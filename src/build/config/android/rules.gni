@@ -9,8 +9,6 @@ import("//build/config/android/config.gni")
 import("//build/config/android/internal_rules.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/python.gni")
-# import("//build/config/rts.gni")
-# import("//build/config/zip.gni")
 import("//build/toolchain/toolchain.gni")
 
 assert(is_android)

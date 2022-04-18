@@ -23,7 +23,7 @@ if (is_android) {
   group("android") {
     if (is_android) {
       public_deps = [
-        ":libms-core",
+        ":libmsl-core",
         # ":libms-framework",
       ]
     }
@@ -59,7 +59,7 @@ if (is_android) {
   #   output_extension = "so"
   # }
 
-  shared_library("libms-core") {
+  shared_library("libmsl-core") {
     visibility = [ "*" ]
     # sources = [ "src/test.cc" ]
     ldflags = [

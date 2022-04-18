@@ -12,7 +12,7 @@ group("default") {
     ]
   } else if (is_android) {
     deps += [
-      "//sdk/msl-core:libms-core",
+      "//sdk/msl-core:libmsl-core",
     ]
   } else if (is_linux) {
     deps += [
