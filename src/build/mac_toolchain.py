@@ -68,11 +68,11 @@ def PlatformMeetsHermeticXcodeRequirements():
   return major_version >= needed
 
 
-def _UseHermeticToolchain():
-  current_dir = os.path.dirname(os.path.realpath(__file__))
-  script_path = os.path.join(current_dir, 'mac/should_use_hermetic_xcode.py')
-  proc = subprocess.Popen([script_path, 'mac'], stdout=subprocess.PIPE)
-  return '1' in proc.stdout.readline().decode()
+# def _UseHermeticToolchain():
+#   current_dir = os.path.dirname(os.path.realpath(__file__))
+#   script_path = os.path.join(current_dir, 'mac/should_use_hermetic_xcode.py')
+#   proc = subprocess.Popen([script_path, 'mac'], stdout=subprocess.PIPE)
+#   return '1' in proc.stdout.readline().decode()
 
 
 def RequestCipdAuthentication():
@@ -190,13 +190,13 @@ def InstallXcodeBinaries():
 
 
 def main():
-  if not _UseHermeticToolchain():
-    print('Skipping Mac toolchain installation for mac')
-    return 0
+  # if not _UseHermeticToolchain():
+  #   print('Skipping Mac toolchain installation for mac')
+  #   return 0
 
   parser = argparse.ArgumentParser(description='Download hermetic Xcode.')
   args = parser.parse_args()
-
+  print("===========mac toolchain args:"+' '.join(args))
   if not PlatformMeetsHermeticXcodeRequirements():
     print('OS version does not support toolchain.')
     return 0
