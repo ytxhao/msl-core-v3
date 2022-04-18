@@ -7,7 +7,7 @@
 # tree. An additional intellectual property rights grant can be found
 # in the file PATENTS.  All contributing project authors may
 # be found in the AUTHORS file in the root of the source tree.
-"""ZORRO iOS FAT libraries build script.
+"""iOS FAT libraries build script.
 Each architecture is compiled separately before being merged together.
 By default, the library is created in out_ios_libs/. (Change with -o.)
 """
@@ -212,6 +212,10 @@ def main():
     dylib_path = os.path.join(SDK_FRAMEWORK_NAME, 'ZorroRtcEngineKit')
     # Dylibs will be combined, all other files are the same across archs.
     # Use distutils instead of shutil to support merging folders.
+    logging.info("=====lib_paths[0]:" + lib_paths[0] + " args.output_dir:" + args.output_dir)
+    if  os.path.isdir(os.path.join(args.output_dir, SDK_FRAMEWORK_NAME)):
+        shutil.rmtree(os.path.join(args.output_dir, SDK_FRAMEWORK_NAME))
+        
     distutils.dir_util.copy_tree(
         os.path.join(lib_paths[0], SDK_FRAMEWORK_NAME),
         os.path.join(args.output_dir, SDK_FRAMEWORK_NAME))

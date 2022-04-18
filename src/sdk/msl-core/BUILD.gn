@@ -183,7 +183,7 @@ if (is_ios) {
       }
 
       bundle_data("ios_framework_bundle") {
-        deps = [ "../sdk:framework_objc" ]
+        deps = [ "//sdk/msl-core:framework_objc" ]
         sources = [ "$root_build_dir/ZorroRtcEngineKit.framework" ]
         outputs = [ "{{bundle_resources_dir}}/Frameworks/{{source_file_part}}" ]
       }

@@ -7,7 +7,7 @@
 # tree. An additional intellectual property rights grant can be found
 # in the file PATENTS.  All contributing project authors may
 # be found in the AUTHORS file in the root of the source tree.
-"""ZORRO iOS FAT libraries build script.
+"""iOS FAT libraries build script.
 Each architecture is compiled separately before being merged together.
 By default, the library is created in out_ios_libs/. (Change with -o.)
 """
