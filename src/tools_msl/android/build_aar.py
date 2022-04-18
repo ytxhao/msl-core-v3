@@ -277,6 +277,18 @@ def BuildAar(archs,
     logging.info('BuildAar  yuhaoo extra_gn_switches:%s', extra_gn_switches)
     logging.info('BuildAar  yuhaoo extra_ninja_switches:%s', extra_ninja_switches)
     logging.info('BuildAar  yuhaoo build_dir:%s', build_dir)
+    rm_lib_dir = os.path.normpath(os.path.join(MSL_APPLICATION_DIR,'msl-core','src','main','libs'))
+    print("=================rm_lib_dir:"+rm_lib_dir)
+    for root, dirs, files in os.walk(rm_lib_dir):
+        for file_path in files:
+            file_name = os.path.join(root, file_path)
+            print("=================file_name:"+file_name)
+            os.remove(file_name)
+        for dir_path in dirs:
+            dir_name = os.path.join(root, dir_path)
+            print("=================dir_name:"+dir_name)
+            shutil.rmtree(dir_name)
+
     for arch in archs:
         Build(build_dir, arch, extra_gn_args, extra_gn_switches,
               extra_ninja_switches)
@@ -287,12 +299,16 @@ def BuildAar(archs,
         for so_file in NEEDED_SO_FILES:
             output_file = os.path.normpath(os.path.join(output_directory, so_file))
             logging.info('BuildAar  yuhaoo output_file:%s', output_file)
-            dist_lib_dir = os.path.normpath(os.path.join(MSL_APPLICATION_DIR,'msl-core','src','main','libs',arch))
+            dist_lib_dir = os.path.normpath(os.path.join(MSL_APPLICATION_DIR,'msl-core','src','main','libs', arch))
             logging.info('BuildAar  yuhaoo dist_dir:%s', dist_lib_dir)
+            if not os.path.exists(dist_lib_dir):
+                os.makedirs(dist_lib_dir)
             shutil.copy(output_file, dist_lib_dir)
         dist_include_dir = os.path.normpath(os.path.join(MSL_APPLICATION_DIR,'msl-core','src','main','cpp','msl','include'))
-        src_include_dir = os.path.normpath(os.path.join(CORE_DIR,'sdk','src'))
+        src_include_dir = os.path.normpath(os.path.join(CORE_DIR,'src'))
+        print("========dist_include_dir:"+dist_include_dir)
         print("========src_include_dir:"+src_include_dir)
+        # 拷贝头文件
         for root, dirs, files in os.walk(src_include_dir):
             for file_path in files:
                 file_name = os.path.join(root, file_path)
@@ -362,9 +378,10 @@ def BuildAar(archs,
     else:
         aar_file_name = "msl-core-release.aar"
     src_aar_file = os.path.normpath(os.path.join(MSL_APPLICATION_DIR,'msl-core','build','outputs','aar', aar_file_name))
-    dist_aar_file = os.path.normpath(os.path.join(build_dir,'msl-core.aar'))
+    dist_aar_file = os.path.normpath(os.path.join(build_dir, 'msl-core.aar'))
     shutil.copyfile(src_aar_file, dist_aar_file)    #复制并重命名文件
     if not ext_build_dir:
+        print("=========1234ext_build_dir:"+ext_build_dir)
         shutil.rmtree(build_dir, True)
 
 
