@@ -5,15 +5,15 @@
 # tree. An additional intellectual property rights grant can be found
 # in the file PATENTS.  All contributing project authors may
 # be found in the AUTHORS file in the root of the source tree.
-import("../../ms-core.gni")
+import("//msl-core.gni")
 rtc_static_library("libmsl_static") {
   visibility = [ "*" ]
   allow_poison = [ "audio_codecs", "default_task_queue" ]
 
   include_dirs = [
-    "../sdk/objc/api",
-    "../sdk/objc/base",
-    "../sdk/objc",
+    "//sdk/msl-core/objc/api",
+    "//sdk/msl-core/objc/base",
+    "//sdk/msl-core/objc",
   ]
 
   cflags = [
