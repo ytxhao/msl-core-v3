@@ -113,16 +113,7 @@ config("strip_all") {
 # The symbolic link for $mac_sdk_path is set up by
 # //build/config/apple/sdk_info.py in //build/config/mac/mac_sdk.gni.
 # if (use_system_xcode && use_goma && target_os == "mac") {
-if (use_system_xcode && false && target_os == "mac") {
-  action("sdk_inputs") {
-    script = "//build/noop.py"
-    outputs = [
-      "$mac_sdk_path/usr/include/mach/exc.defs",
-      "$mac_sdk_path/usr/include/mach/mach_exc.defs",
-      "$mac_sdk_path/usr/include/mach/notify.defs",
-    ]
-  }
-} else {
-  group("sdk_inputs") {
-  }
+
+group("sdk_inputs") {
 }
+

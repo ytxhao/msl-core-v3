@@ -231,8 +231,6 @@ default_compiler_configs = [
   "//build/config/compiler:thin_archive",
   "//build/config/compiler:thinlto_optimize_default",
   "//build/config/compiler:default_init_stack_vars",
-  # "//build/config/coverage:default_coverage",
-  #"//build/config/sanitizers:default_sanitizer_flags",
 ]
 
 if (is_win) {
@@ -245,29 +243,6 @@ if (is_win) {
     "//build/config/win:winver",
   ]
 }
-
-# if (is_posix) {
-#   if (current_os != "aix") {
-#     default_compiler_configs +=
-#         [ "//build/config/gcc:symbol_visibility_hidden" ]
-#   }
-# }
-
-# if (is_fuchsia) {
-#   default_compiler_configs += [ "//build/config/gcc:symbol_visibility_hidden" ]
-# }
-
-# if (is_android) {
-#   default_compiler_configs +=
-#       [ "//build/config/android:default_orderfile_instrumentation" ]
-# }
-
-# if (is_clang && !is_nacl) {
-#   default_compiler_configs += [
-#     "//build/config/clang:find_bad_constructs",
-#     "//build/config/clang:extra_warnings",
-#   ]
-# }
 
 print("============is_debug:$is_debug")
 # Debug/release-related defines.

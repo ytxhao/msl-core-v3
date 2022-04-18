@@ -21,14 +21,6 @@ group("default") {
   }
 }
 
-
-# Abseil Flags by default doesn't register command line flags on mobile
-# platforms, WebRTC tests requires them (e.g. on simualtors) so this
-# config will be applied to testonly targets globally (see webrtc.gni).
-config("absl_flags_configs") {
-  defines = [ "ABSL_FLAGS_STRIP_NAMES=0" ]
-}
-
 config("library_impl_config") {
   # Build targets that contain WebRTC implementation need this macro to
   # be defined in order to correctly export symbols when is_component_build
@@ -115,45 +107,6 @@ config("common_config") {
 
   cflags = []
 
-  #   if (is_clang) {
-  #     cflags += [
-  #       "-Wc++11-narrowing",
-  #       "-Wimplicit-fallthrough",
-  #       "-Wthread-safety",
-  #       "-Winconsistent-missing-override",
-  #       "-Wundef",
-  #     ]
-
-  #     # use_xcode_clang only refers to the iOS toolchain, host binaries use
-  #     # chromium's clang always.
-  #     if (!is_nacl &&
-  #         (!use_xcode_clang || current_toolchain == host_toolchain)) {
-  #       # Flags NaCl (Clang 3.7) and Xcode 7.3 (Clang clang-703.0.31) do not
-  #       # recognize.
-  #       cflags += [ "-Wunused-lambda-capture" ]
-  #     }
-
-  #     if (use_xcode_clang) {
-  #       # This may be removed if the clang version in xcode > 12.4 includes the
-  #       # fix https://reviews.llvm.org/D73007.
-  #       # https://bugs.llvm.org/show_bug.cgi?id=44556
-  #       cflags += [ "-Wno-range-loop-analysis" ]
-  #     }
-  #   }
-
-  #   if (is_win && !is_clang) {
-  #     # MSVC warning suppressions (needed to use Abseil).
-  #     # TODO(bugs.webrtc.org/9274): Remove these warnings as soon as MSVC allows
-  #     # external headers warning suppression (or fix them upstream).
-  #     cflags += [ "/wd4702" ]  # unreachable code
-
-  #     # MSVC 2019 warning suppressions for C++17 compiling
-  #     cflags +=
-  #         [ "/wd5041" ]  # out-of-line definition for constexpr static data
-  #                        # member is not needed and is deprecated in C++17
-  #   }
-  # }
-
   if (current_cpu == "arm64") {
     defines += [ "WEBRTC_ARCH_ARM64" ]
     defines += [ "WEBRTC_HAS_NEON" ]
@@ -197,26 +150,10 @@ config("common_config") {
       "-fno-builtin-sinf",
     ]
   }
-
-  # if (use_fuzzing_engine && optimize_for_fuzzing) {
-  #   # Used in Chromium's overrides to disable logging
-  #   defines += [ "WEBRTC_UNSAFE_FUZZER_MODE" ]
-  # }
-
-  # if (!build_with_chromium && rtc_win_undef_unicode) {
-  #   cflags += [
-  #     "/UUNICODE",
-  #     "/U_UNICODE",
-  #   ]
-  # }
 }
 
 config("common_objc") {
   frameworks = [ "Foundation.framework" ]
-
-  # if (rtc_use_metal_rendering) {
-  #   defines = [ "RTC_SUPPORTS_METAL" ]
-  # }
 }
 
 # ---- Poisons ----
