@@ -1,12 +1,6 @@
 print("=====15is_ios:$is_ios is_android:$is_android is_linux:$is_linux is_mac:$is_mac")
 import("//build/config/arm.gni")
-# import("//build/config/features.gni")
-# import("//build/config/mips.gni")
-# import("//build/config/android/rules.gni")
-#import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/sysroot.gni")
-# import("//build/config/ui.gni")
-# import("//build_overrides/build.gni")
 print("=====16is_ios:$is_ios is_android:$is_android is_linux:$is_linux is_mac:$is_mac")
 if (is_ios) {
   import("//build/config/ios/rules.gni")
@@ -17,7 +11,6 @@ if (is_mac) {
 }
 
 declare_args() {
-  openh264_dec = false
   rtc_enable_stun_encrypt = true
   # Setting this to true will make RTC_EXPORT (see rtc_base/system/rtc_export.h)
   # expand to code that will manage symbols visibility.
@@ -382,13 +375,6 @@ all_poison_types = [
   "software_video_codecs",
 ]
 
-absl_include_config = "//third_party/abseil-cpp:absl_include_config"
-absl_define_config = "//third_party/abseil-cpp:absl_define_config"
-
-# Abseil Flags are testonly, so this config will only be applied to WebRTC targets
-# that are testonly.
-absl_flags_config = webrtc_root + ":absl_flags_configs"
-
 # WebRTC wrapper of Chromium's test() template. This template just adds some
 # WebRTC only configuration in order to avoid to duplicate it for every WebRTC
 # target.
@@ -417,9 +403,6 @@ template("rtc_test") {
     configs -= invoker.suppressed_configs
     public_configs = [
       rtc_common_inherited_config,
-      absl_include_config,
-      absl_define_config,
-      absl_flags_config,
     ]
     if (defined(invoker.public_configs)) {
       public_configs += invoker.public_configs
@@ -532,12 +515,7 @@ template("rtc_source_set") {
     configs -= invoker.suppressed_configs
     public_configs = [
       rtc_common_inherited_config,
-      absl_include_config,
-      absl_define_config,
     ]
-    if (defined(testonly) && testonly) {
-      public_configs += [ absl_flags_config ]
-    }
     if (defined(invoker.public_configs)) {
       public_configs += invoker.public_configs
     }
@@ -617,12 +595,7 @@ template("rtc_static_library") {
     configs -= invoker.suppressed_configs
     public_configs = [
       rtc_common_inherited_config,
-      # absl_include_config,
-      # absl_define_config,
     ]
-    if (defined(testonly) && testonly) {
-      public_configs += [ absl_flags_config ]
-    }
     if (defined(invoker.public_configs)) {
       public_configs += invoker.public_configs
     }
@@ -725,12 +698,7 @@ template("rtc_library") {
     configs -= invoker.suppressed_configs
     public_configs = [
       rtc_common_inherited_config,
-      # absl_include_config,
-      # absl_define_config,
     ]
-    if (defined(testonly) && testonly) {
-      public_configs += [ absl_flags_config ]
-    }
     if (defined(invoker.public_configs)) {
       public_configs += invoker.public_configs
     }
@@ -768,12 +736,7 @@ template("rtc_executable") {
 
     public_configs = [
       rtc_common_inherited_config,
-      absl_include_config,
-      absl_define_config,
     ]
-    if (defined(testonly) && testonly) {
-      public_configs += [ absl_flags_config ]
-    }
     if (defined(invoker.public_configs)) {
       public_configs += invoker.public_configs
     }
@@ -844,12 +807,7 @@ template("rtc_shared_library") {
     configs -= invoker.suppressed_configs
     public_configs = [
       rtc_common_inherited_config,
-      # absl_include_config,
-      # absl_define_config,
     ]
-    if (defined(testonly) && testonly) {
-      public_configs += [ absl_flags_config ]
-    }
     if (defined(invoker.public_configs)) {
       public_configs += invoker.public_configs
     }
@@ -1050,52 +1008,6 @@ if (is_android) {
 
       no_build_hooks = true
       not_needed([ "android_manifest" ])
-    }
-  }
-
-  template("rtc_android_apk") {
-    android_apk(target_name) {
-      forward_variables_from(invoker,
-                             "*",
-                             [
-                               "configs",
-                               "public_configs",
-                               "suppressed_configs",
-                               "visibility",
-                             ])
-
-      # Treat warnings as errors.
-      errorprone_args = []
-      errorprone_args += [ "-Werror" ]
-
-      if (!defined(deps)) {
-        deps = []
-      }
-
-      no_build_hooks = true
-    }
-  }
-
-  template("rtc_instrumentation_test_apk") {
-    instrumentation_test_apk(target_name) {
-      forward_variables_from(invoker,
-                             "*",
-                             [
-                               "configs",
-                               "public_configs",
-                               "suppressed_configs",
-                               "visibility",
-                             ])
-
-      # Treat warnings as errors.
-      errorprone_args = []
-      errorprone_args += [ "-Werror" ]
-
-      if (!defined(deps)) {
-        deps = []
-      }
-
-      no_build_hooks = true
     }
   }
 }
