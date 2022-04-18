@@ -1,23 +1,22 @@
-import("//ms-core.gni")
+import("//msl-core.gni")
 print("=====is_ios:$is_ios is_android:$is_android is_linux:$is_linux is_mac:$is_mac")
 group("default") {
   deps = []
   if (is_ios) {
     deps += [
-      "//third_party/ms-core/sdk:framework_objc",
+      "//sdk/msl-core:framework_objc",
     ]
   } else if (is_mac) {
     deps += [
-      "//third_party/ms-core/sdk:mac_framework_objc",
+      "//sdk/msl-core:mac_framework_objc",
     ]
   } else if (is_android) {
     deps += [
-      # "//third_party/ms-core/sdk/android:libms-framework",
-      "//third_party/ms-core/sdk:libms-core",
+      "//sdk/msl-core:libms-core",
     ]
   } else if (is_linux) {
     deps += [
-      "//third_party/ms-core/sdk/linux:linux",
+      "//sdk/msl-core/linux:linux",
     ]
   }
 }
