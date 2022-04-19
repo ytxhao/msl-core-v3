@@ -16,7 +16,7 @@ SRC_DIR = os.path.normpath(os.path.join(SCRIPT_DIR, os.pardir, os.pardir))
 DEPOT_TOOLS_PATH = os.path.normpath(os.path.join(SRC_DIR, 'third_party', 'depot_tools'))
 DEFAULT_ARCHS = ['x86_64']
 TARGETS = [
-    'third_party/ms-core/sdk/linux:linux',
+    'sdk/msl-core/linux:linux',
 ]
 
 def _ParseArgs():
