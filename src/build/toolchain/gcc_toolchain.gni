@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 # print("=====1278is_ios")
-# import("//build/config/clang/clang.gni")
+import("//build/config/clang/clang.gni")
 import("//build/config/compiler/compiler.gni")
 # import("//build/config/coverage/coverage.gni")
 # import("//build/config/sanitizers/sanitizers.gni")
@@ -616,10 +616,6 @@ template("gcc_toolchain") {
 # requires a config to pass the appropriate -target option, or else it will
 # actually just be doing a native compile. The invoker can optionally override
 # use_gold too.
-# yuhaoo test for linux
-declare_args() {
-  clang_base_path = "/usr"
-}
 
 template("clang_toolchain") {
   if (defined(invoker.toolprefix)) {
@@ -635,10 +631,10 @@ template("clang_toolchain") {
     ld = cxx
     readelf = "${toolprefix}readelf"
     # yuhaoo test for linux
-    # ar = "${prefix}/llvm-ar"
-    # nm = "${prefix}/llvm-nm"
-    ar = "${prefix}/ar"
-    nm = "${prefix}/nm"
+    ar = "${prefix}/llvm-ar"
+    nm = "${prefix}/llvm-nm"
+    # ar = "${prefix}/ar"
+    # nm = "${prefix}/nm"
 
     forward_variables_from(invoker,
                            [

@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 
 # Based on build_aar.py
+# sudo apt install llvm
+# sudo apt install clang
+# sudo apt-get install build-essential // for g++
 
 import argparse
 import logging
@@ -136,6 +139,8 @@ def Build(build_dir, arch, use_goma, extra_gn_args, extra_gn_switches,
     gn_args = {
         'target_os': 'linux',
         'sysroot':'/',
+        'clang_base_path':'/usr',
+        # 'is_clang':False,
         'is_debug': False,
         'is_component_build': False,
         'rtc_include_tests': False,
