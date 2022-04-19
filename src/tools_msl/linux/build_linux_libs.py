@@ -135,6 +135,7 @@ def Build(build_dir, arch, use_goma, extra_gn_args, extra_gn_switches,
     output_directory = _GetOutputDirectory(build_dir, arch)
     gn_args = {
         'target_os': 'linux',
+        'sysroot':'/',
         'is_debug': False,
         'is_component_build': False,
         'rtc_include_tests': False,

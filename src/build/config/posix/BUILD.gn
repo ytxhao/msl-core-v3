@@ -28,18 +28,19 @@ config("runtime_library") {
   if (!is_apple && sysroot != "") {
     # Pass the sysroot to all C compiler variants, the assembler, and linker.
     sysroot_flags = [ "--sysroot=" + rebase_path(sysroot, root_build_dir) ]
-    if (is_linux || is_chromeos) {
-      # This is here so that all files get recompiled after a sysroot roll and
-      # when turning the sysroot on or off. (defines are passed via the command
-      # line, and build system rebuilds things when their commandline
-      # changes). Nothing should ever read this define.
-      sysroot_hash =
-          exec_script("//build/linux/sysroot_scripts/install-sysroot.py",
-                      [ "--print-hash=$current_cpu" ],
-                      "trim string",
-                      [ "//build/linux/sysroot_scripts/sysroots.json" ])
-      defines += [ "CR_SYSROOT_HASH=$sysroot_hash" ]
-    }
+    print("======================123sysroot_flags:$sysroot_flags")
+    # if (is_linux || is_chromeos) {
+    #   # This is here so that all files get recompiled after a sysroot roll and
+    #   # when turning the sysroot on or off. (defines are passed via the command
+    #   # line, and build system rebuilds things when their commandline
+    #   # changes). Nothing should ever read this define.
+    #   sysroot_hash =
+    #       exec_script("//build/linux/sysroot_scripts/install-sysroot.py",
+    #                   [ "--print-hash=$current_cpu" ],
+    #                   "trim string",
+    #                   [ "//build/linux/sysroot_scripts/sysroots.json" ])
+    #   defines += [ "CR_SYSROOT_HASH=$sysroot_hash" ]
+    # }
     asmflags += sysroot_flags
     ldflags += sysroot_flags
 
