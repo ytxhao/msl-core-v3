@@ -25,6 +25,17 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -g -Wall -Wno-unused-variable
 add_definitions(-DAN_DEBUG)
 include_directories(${PATH_TO_MEDIA_STREAM}/msl/include)
 
+add_library(msl-core-lib
+        SHARED
+        IMPORTED)
+
+set_target_properties( # Specifies the target library.
+        msl-core-lib
+        # Specifies the parameter you want to define.
+        PROPERTIES IMPORTED_LOCATION
+        # Provides the path to the library you want to import.
+        ${PATH_TO_LIBS}/${ANDROID_ABI}/libmsl-core.so)
+
 add_library( # Sets the name of the library.
         msl-core-jni
 
@@ -57,4 +68,4 @@ target_link_libraries( # Specifies the target library.
         # Links the target library to the log library
         # included in the NDK.
         ${log-lib}
-        ${PATH_TO_LIBS}/${ANDROID_ABI}/libmsl-core.so)
+        msl-core-lib)

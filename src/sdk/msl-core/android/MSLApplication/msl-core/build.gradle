@@ -10,7 +10,7 @@ ext {
         native_media_stream_path = file(rootDir.getAbsolutePath() + "/msl-core/src/main/cpp")
     }
     println "native_media_stream_path=$native_media_stream_path"
-    mslAbiFilters = project.hasProperty('mslAbiFilters') ? mslAbiFilters : "arm64-v8a,armeabi-v7a"
+    mslAbiFilters = project.hasProperty('mslAbiFilters') ? mslAbiFilters : "arm64-v8a"
     mslNdkPath = project.hasProperty('mslNdkPath') ? mslNdkPath : ""
     println "gradle mslAbiFilters=" + mslAbiFilters
     println "gradle mslNdkPath=" + mslNdkPath
@@ -18,8 +18,13 @@ ext {
 
 android {
     compileSdk 32
-//    ndkVersion rootProject.ext.ndkVersion
-    ndkPath mslNdkPath
+    if (mslNdkPath) {
+        println("mslNdkPath is not null")
+        ndkPath mslNdkPath
+    } else {
+        println("mslNdkPath is null")
+        ndkVersion "21.4.7075529"
+    }
     defaultConfig {
         minSdk 21
         targetSdk 32
@@ -38,11 +43,11 @@ android {
         }
     }
 
-    sourceSets {
-        main {
-            jniLibs.srcDirs = ['src/main/libs']
-        }
-    }
+//    sourceSets {
+//        main {
+//            jniLibs.srcDirs = ['src/main/libs']
+//        }
+//    }
 
     buildTypes {
         release {

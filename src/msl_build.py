@@ -145,17 +145,18 @@ def main():
         logging.info('cmd:%s', cmd)
         subprocess.call(cmd, shell=True)
 
-        chmod(OUTPUT_DIR)
-        chmod(build_dir)
+        # chmod(OUTPUT_DIR)
+        # chmod(build_dir)
         arch_str = architectures.split()
         for arch in arch_str:
             arch_dir = os.path.join(build_dir, arch)
-            chmod(arch_dir)
+            # chmod(arch_dir)
             dir_list = os.listdir(arch_dir)
             for i in range(0, len(dir_list)):
                 path = os.path.join(arch_dir, dir_list[i])
                 if os.path.isdir(path):
-                    chmod(path)
+                    print("path:" + path)
+                    # chmod(path)
 
     if args.os == "i":
         architectures = ' '.join(list(args.arch))
