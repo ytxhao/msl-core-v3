@@ -209,7 +209,10 @@ def Build(build_dir, arch, extra_gn_args, extra_gn_switches,
     android_ndk_version = config.get("config", "android_ndk_version")
     android_ndk_major_version = config.get("config", "android_ndk_major_version")
     android_sdk_root = config.get("config", "android_sdk_root")
-    android_cmake_root = config.get("config", "android_cmake_root")
+    android_cmake_root = ""
+    if config.has_option('config','android_cmake_root'):
+        android_cmake_root = config.get("config", "android_cmake_root")
+
     print("=======android_ndk_root:"+android_ndk_root)
     print("=======android_ndk_version:"+android_ndk_version)
     print("=======android_ndk_major_version:"+android_ndk_major_version)
@@ -276,7 +279,7 @@ def ConfigCmakeDir(config_file, cmake_dir):
             find_cmake_dir = True
             list = strip_line.split("="); 
             line_key = list[0]
-            line_value = list[2]
+            line_value = list[1]
             print("key:"+line_key)
             print("line_value:"+line_value)
             new_line = line_key + "=" + cmake_dir
