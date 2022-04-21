@@ -35,6 +35,9 @@ import tempfile
 import re
 import zipfile
 
+# sys.path.append(SCRIPT_DIR)
+import depot_tools
+
 SCRIPT_DIR = os.path.dirname(os.path.realpath(sys.argv[0]))
 SRC_DIR = os.path.normpath(os.path.join(SCRIPT_DIR, os.pardir, os.pardir))
 CORE_DIR = os.path.normpath(os.path.join(SRC_DIR, 'sdk', 'msl-core'))
@@ -54,6 +57,8 @@ TARGETS = [
 
 # sys.path.append(os.path.join(SCRIPT_DIR, '..', 'libs'))
 # from generate_licenses import LicenseBuilder
+
+
 print("--------- SCRIPT_DIR:"+SCRIPT_DIR)
 print("--------- SRC_DIR:"+SRC_DIR)
 print("--------- CORE_DIR:"+CORE_DIR)
@@ -452,7 +457,9 @@ def main():
     # logging.info("JAR_FILE:%s", JAR_FILE)
     # logging.info("MANIFEST_FILE:%s", MANIFEST_FILE)
     # logging.info('info  yuhaoo args:%s', args)
-    
+    # 检查是否安装了指定版本的 cmake
+    depot_tools.CheckCmakeTools()
+    return
     BuildAar(args.arch, args.output, args.extra_gn_args,
              args.build_dir, args.extra_gn_switches, args.extra_ninja_switches)
 
