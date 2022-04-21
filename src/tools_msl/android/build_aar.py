@@ -42,6 +42,7 @@ MSL_APPLICATION_DIR =  os.path.normpath(os.path.join(CORE_DIR,'android','MSLAppl
 DEPOT_TOOLS_PATH = os.path.normpath(os.path.join(SRC_DIR, 'third_party', 'depot_tools'))
 ANDROID_NDK_ROOT_DIR = ""
 ANDROID_SDK_ROOT_DIR = ""
+ANDROID_CMAKE_ROOT_DIR = ""
 DEFAULT_ARCHS = ['armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64']
 NEEDED_SO_FILES = ['libmsl-core.so']
 JAR_FILE = 'lib.java/third_party/core/sdk/android/libms-framework.jar'
@@ -208,15 +209,18 @@ def Build(build_dir, arch, extra_gn_args, extra_gn_switches,
     android_ndk_version = config.get("config", "android_ndk_version")
     android_ndk_major_version = config.get("config", "android_ndk_major_version")
     android_sdk_root = config.get("config", "android_sdk_root")
-
+    android_cmake_root = config.get("config", "android_cmake_root")
     print("=======android_ndk_root:"+android_ndk_root)
     print("=======android_ndk_version:"+android_ndk_version)
     print("=======android_ndk_major_version:"+android_ndk_major_version)
     print("=======android_sdk_root:"+android_sdk_root)
+    print("=======android_cmake_root:"+android_cmake_root)
     global ANDROID_NDK_ROOT_DIR
     ANDROID_NDK_ROOT_DIR = android_ndk_root
     global ANDROID_SDK_ROOT_DIR
     ANDROID_SDK_ROOT_DIR = android_sdk_root
+    global ANDROID_CMAKE_ROOT_DIR
+    ANDROID_CMAKE_ROOT_DIR = android_cmake_root
     android_config_dict={}
     android_config_dict["default_android_ndk_root"]=android_ndk_root
     android_config_dict["default_android_ndk_version"]=android_ndk_version
@@ -254,6 +258,47 @@ def Collect(aar_file, build_dir, arch):
                        os.path.join(abi_dir, so_file))
 
 
+def ConfigCmakeDir(config_file, cmake_dir):
+    logging.info('ConfigCmakeDir config_file: %s', config_file)
+    logging.info('ConfigCmakeDir cmake_dir: %s', cmake_dir)
+    fr = open(config_file, "rb")
+    fw = open(config_file + ".bak", "wb+")
+    # lines = fr.readlines()
+    find_cmake_dir = False
+    # each = None
+    for line in fr:
+        print(line)
+        # if line in ['\n','\r\n'] or line.strip() == "":
+        #     continue
+        strip_line  = line.strip()
+        new_line = line
+        if strip_line.find("cmake.dir") == 0 and strip_line.find("=") != -1:
+            find_cmake_dir = True
+            list = strip_line.split("="); 
+            line_key = list[0]
+            line_value = list[2]
+            print("key:"+line_key)
+            print("line_value:"+line_value)
+            new_line = line_key + "=" + cmake_dir
+            print("cmake new_line:"+new_line)
+            # strip_line_len = len(strip_line)
+            # pos = strip_line.find("=")
+            # strip_line.sub()
+        # else:
+        #     print("\033[31mcmake.dir config error\n\033[0m")
+        #     raise Exception('Unknown cmake.dir')
+        fw.write(new_line)
+    print("=========find_cmake_dir",find_cmake_dir)
+    if find_cmake_dir == False:
+        fw.write("\r\n")
+        fw.write("cmake.dir="+cmake_dir)
+    fr.close()
+    fw.close()
+
+    os.remove(fr.name)
+    newName = fw.name.replace(".bak","")
+    os.rename(fw.name, newName)
+ 
 # def GenerateLicenses(output_dir, build_dir, archs):
 #     builder = LicenseBuilder(
 #         [_GetOutputDirectory(build_dir, arch) for arch in archs], TARGETS)
@@ -336,6 +381,14 @@ def BuildAar(archs,
     # ' '.join(
     #     [k + '=' + _EncodeForGN(v)
     #      for k, v in extra_gn_args.items()])
+
+    # 向 local.properties 写入配置
+    print("====ANDROID_CMAKE_ROOT_DIR:"+ANDROID_CMAKE_ROOT_DIR)
+    if not ANDROID_CMAKE_ROOT_DIR:
+        print("cmake.dir is not config")
+    else:
+        ConfigCmakeDir(os.path.normpath(os.path.join(MSL_APPLICATION_DIR,'local.properties')), ANDROID_CMAKE_ROOT_DIR)
+        
     for i in extra_gn_args:
         print("index:%s value:%s" % (extra_gn_args.index(i), _EncodeForGN(i)))
     args_dic = {}
