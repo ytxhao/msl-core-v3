@@ -7,6 +7,8 @@ import tarfile
 import time
 import datetime  # 导入datetime模块
 import threading
+import logging
+import subprocess
 
 from tkinter.messagebox import YES  # 导入threading模块
 
@@ -15,6 +17,7 @@ from tkinter.messagebox import YES  # 导入threading模块
 SCRIPT_DIR = os.path.dirname(os.path.realpath(sys.argv[0]))
 SRC_DIR = os.path.normpath(os.path.join(SCRIPT_DIR, os.pardir, os.pardir))
 CMAKE_ROOT_DIR = os.path.normpath(os.path.join(SRC_DIR, 'tools', 'cmake'))
+CMAKE_BUILD_SCRIPT = os.path.normpath(os.path.join(CMAKE_ROOT_DIR, 'source', 'cmake-3.23.1', 'bootstrap'))
 print("depot tools CMAKE_ROOT_DIR:"+CMAKE_ROOT_DIR)
 
 isStop = False
@@ -51,7 +54,7 @@ def CheckCmakeTools():
     print("====================1start")
     t1.start()  # 开始执行线程
     cmake_tar_file = os.path.join(CMAKE_ROOT_DIR, 'source', 'cmake-3.23.1.tar.gz')
-    if os.path.exists(os.path.join(CMAKE_ROOT_DIR, 'source', 'cmake-3.23.1')) == False:
+    if os.path.exists(os.path.join(CMAKE_ROOT_DIR, 'source', 'cmake-3.23.1')):
         pass
     else:
         print("depot tools cmake_tar_file:"+cmake_tar_file)
@@ -71,6 +74,18 @@ def CheckCmakeTools():
     # tar.extractall(os.path.join(CMAKE_ROOT_DIR, 'source'))
     # 解压到上级目录
 
+
+    os.chdir(os.path.join(CMAKE_ROOT_DIR, 'source', 'cmake-3.23.1'))
+    os.makedirs("cmake-build")
+    os.chdir("cmake-build")
+    
+    cmd = "{0} --prefix={1}".format(
+        CMAKE_BUILD_SCRIPT,
+        CMAKE_ROOT_DIR)
+    logging.info('cmd:%s', cmd)
+    subprocess.call(cmd, shell=True)
+
+    subprocess.call("make -j4 && make install", shell=True)
 
 def main():
     print("depot tools main")
