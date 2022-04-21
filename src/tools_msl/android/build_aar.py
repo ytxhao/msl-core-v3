@@ -458,8 +458,8 @@ def main():
     # logging.info("MANIFEST_FILE:%s", MANIFEST_FILE)
     # logging.info('info  yuhaoo args:%s', args)
     # 检查是否安装了指定版本的 cmake
-    depot_tools.CheckCmakeTools()
-    return
+    ret = depot_tools.CheckCmakeTools()
+    print("build_aar.py CheckCmakeTools ret:",ret)
     BuildAar(args.arch, args.output, args.extra_gn_args,
              args.build_dir, args.extra_gn_switches, args.extra_ninja_switches)
 

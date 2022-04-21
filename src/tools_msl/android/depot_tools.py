@@ -13,7 +13,7 @@ import subprocess
 from tkinter.messagebox import YES  # 导入threading模块
 
 # class _InterTimer 
-
+CMAKE_VERSION = "3.23.1"
 SCRIPT_DIR = os.path.dirname(os.path.realpath(sys.argv[0]))
 SRC_DIR = os.path.normpath(os.path.join(SCRIPT_DIR, os.pardir, os.pardir))
 CMAKE_ROOT_DIR = os.path.normpath(os.path.join(SRC_DIR, 'tools', 'cmake'))
@@ -50,6 +50,18 @@ def progress_bar():
 
 def CheckCmakeTools():
     print("depot tools CheckCmakeTools")
+
+    cmd = "{0} -version".format(
+        os.path.normpath(os.path.join(CMAKE_ROOT_DIR, '3.23.1', 'bin', 'cmake')))
+    
+    result = subprocess.call(cmd, shell=True)
+    print("======result:",result)
+    if result == 0:
+        return os.path.normpath(os.path.join(CMAKE_ROOT_DIR, '3.23.1'))
+    else:
+        pass
+
+    return
     t1 = threading.Timer(1, function=run)  # 创建定时器
     print("====================1start")
     t1.start()  # 开始执行线程
@@ -78,14 +90,25 @@ def CheckCmakeTools():
     os.chdir(os.path.join(CMAKE_ROOT_DIR, 'source', 'cmake-3.23.1'))
     os.makedirs("cmake-build")
     os.chdir("cmake-build")
-    
+
     cmd = "{0} --prefix={1}".format(
         CMAKE_BUILD_SCRIPT,
-        CMAKE_ROOT_DIR)
+        os.path.normpath(os.path.join(CMAKE_ROOT_DIR, CMAKE_VERSION)))
     logging.info('cmd:%s', cmd)
     subprocess.call(cmd, shell=True)
 
     subprocess.call("make -j4 && make install", shell=True)
+
+    cmd = "{0} -version".format(
+        os.path.normpath(os.path.join(CMAKE_ROOT_DIR, '3.23.1', 'bin', 'cmake')))
+    
+    result = subprocess.call(cmd, shell=True)
+    print("======result:",result)
+    print("======result:",result)
+    if result:
+        return os.path.normpath(os.path.join(CMAKE_ROOT_DIR, '3.23.1'))
+    else:
+        return None
 
 def main():
     print("depot tools main")
