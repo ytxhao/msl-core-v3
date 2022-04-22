@@ -716,7 +716,8 @@ config("compiler") {
 
   # Pass flag to LLD so Android builds can allow debuggerd to properly symbolize
   # stack crashes (http://crbug.com/919499).
-  if (use_lld && is_android) {
+  print("==========yu default_android_ndk_major_version:$default_android_ndk_major_version")
+  if (use_lld && is_android && default_android_ndk_major_version >= 22) {
     ldflags += [ "-Wl,--no-rosegment" ]
   }
 
@@ -1581,9 +1582,16 @@ config("default_warnings") {
         cflags += [ "-Wno-nonportable-include-path" ]
       }
 
-      if (current_toolchain == host_toolchain || !use_xcode_clang) {
+      print("================yu current_toolchain:$current_toolchain")
+      print("================yu host_toolchain:$host_toolchain")
+      print("================yu is_android:$is_android")
+
+
+      if (((current_toolchain == host_toolchain || !use_xcode_clang) && !is_android) || (is_android && default_android_ndk_major_version >= 22)) {
         # Flags NaCl (Clang 3.7) and Xcode 9.2 (Clang clang-900.0.39.2) do not
         # recognize.
+        print("================yu 12is_android")
+
         cflags += [
           # An ABI compat warning we don't care about, https://crbug.com/1102157
           # TODO(thakis): Push this to the (few) targets that need it,

@@ -212,7 +212,7 @@ def Build(build_dir, arch, extra_gn_args, extra_gn_switches,
     config.read(filenames = config_path)
     android_ndk_root = config.get("config", "android_ndk_root")
     android_ndk_version = config.get("config", "android_ndk_version")
-    android_ndk_major_version = config.get("config", "android_ndk_major_version")
+    android_ndk_major_version = config.getint("config", "android_ndk_major_version")
     android_sdk_root = config.get("config", "android_sdk_root")
     android_cmake_root = ""
     if config.has_option('config','android_cmake_root'):
@@ -220,7 +220,7 @@ def Build(build_dir, arch, extra_gn_args, extra_gn_switches,
 
     print("=======android_ndk_root:"+android_ndk_root)
     print("=======android_ndk_version:"+android_ndk_version)
-    print("=======android_ndk_major_version:"+android_ndk_major_version)
+    print("=======android_ndk_major_version:{0}".format(android_ndk_major_version))
     print("=======android_sdk_root:"+android_sdk_root)
     print("=======android_cmake_root:"+android_cmake_root)
     global ANDROID_NDK_ROOT_DIR
