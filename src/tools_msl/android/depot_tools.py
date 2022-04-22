@@ -9,15 +9,20 @@ import datetime  # 导入datetime模块
 import threading
 import logging
 import subprocess
+import platform
 
 from tkinter.messagebox import YES  # 导入threading模块
+
+
 
 # class _InterTimer 
 CMAKE_VERSION = "3.23.1"
 SCRIPT_DIR = os.path.dirname(os.path.realpath(sys.argv[0]))
 SRC_DIR = os.path.normpath(os.path.join(SCRIPT_DIR, os.pardir, os.pardir))
-CMAKE_ROOT_DIR = os.path.normpath(os.path.join(SRC_DIR, 'tools', 'cmake'))
-CMAKE_BUILD_SCRIPT = os.path.normpath(os.path.join(CMAKE_ROOT_DIR, 'source', 'cmake-3.23.1', 'bootstrap'))
+TOOLS_DIR = os.path.normpath(os.path.join(SRC_DIR, 'tools'))
+CMAKE_ROOT_DIR = os.path.normpath(os.path.join(TOOLS_DIR, platform.system(), 'cmake'))
+CMAKE_SOURCE_DIR = os.path.normpath(os.path.join(TOOLS_DIR, 'cmake', 'source'))
+CMAKE_BUILD_SCRIPT = os.path.normpath(os.path.join(CMAKE_SOURCE_DIR, 'cmake-3.23.1', 'bootstrap'))
 print("depot tools CMAKE_ROOT_DIR:"+CMAKE_ROOT_DIR)
 
 isStop = False
@@ -50,7 +55,16 @@ def progress_bar():
 
 def CheckCmakeTools():
     print("depot tools CheckCmakeTools")
-
+    cur_dir = os.getcwd()
+    os.chdir(TOOLS_DIR)
+    if os.path.exists(os.path.join(TOOLS_DIR, platform.system(), 'cmake')):
+        print("depot tools 1CheckCmakeTools")
+    else:
+        os.makedirs(os.path.join(TOOLS_DIR, platform.system(), 'cmake'))
+        print("depot tools 2CheckCmakeTools")
+    os.chdir(cur_dir)
+    print("depot tools 3CheckCmakeTools:"+cur_dir)
+    
     cmd = "{0} -version".format(
         os.path.normpath(os.path.join(CMAKE_ROOT_DIR, '3.23.1', 'bin', 'cmake')))
     
@@ -61,12 +75,12 @@ def CheckCmakeTools():
     else:
         pass
 
-    return
+    # return
     t1 = threading.Timer(1, function=run)  # 创建定时器
     print("====================1start")
     t1.start()  # 开始执行线程
-    cmake_tar_file = os.path.join(CMAKE_ROOT_DIR, 'source', 'cmake-3.23.1.tar.gz')
-    if os.path.exists(os.path.join(CMAKE_ROOT_DIR, 'source', 'cmake-3.23.1')):
+    cmake_tar_file = os.path.join(CMAKE_SOURCE_DIR, 'cmake-3.23.1.tar.gz')
+    if os.path.exists(os.path.join(CMAKE_SOURCE_DIR, 'cmake-3.23.1')):
         pass
     else:
         print("depot tools cmake_tar_file:"+cmake_tar_file)
@@ -87,7 +101,7 @@ def CheckCmakeTools():
     # 解压到上级目录
 
 
-    os.chdir(os.path.join(CMAKE_ROOT_DIR, 'source', 'cmake-3.23.1'))
+    os.chdir(os.path.join(CMAKE_SOURCE_DIR, 'cmake-3.23.1'))
     os.makedirs("cmake-build")
     os.chdir("cmake-build")
 
@@ -103,7 +117,6 @@ def CheckCmakeTools():
         os.path.normpath(os.path.join(CMAKE_ROOT_DIR, '3.23.1', 'bin', 'cmake')))
     
     result = subprocess.call(cmd, shell=True)
-    print("======result:",result)
     print("======result:",result)
     if result:
         return os.path.normpath(os.path.join(CMAKE_ROOT_DIR, '3.23.1'))

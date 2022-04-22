@@ -460,6 +460,7 @@ def main():
     # 检查是否安装了指定版本的 cmake
     ret = depot_tools.CheckCmakeTools()
     print("build_aar.py CheckCmakeTools ret:",ret)
+    return
     BuildAar(args.arch, args.output, args.extra_gn_args,
              args.build_dir, args.extra_gn_switches, args.extra_ninja_switches)
 
