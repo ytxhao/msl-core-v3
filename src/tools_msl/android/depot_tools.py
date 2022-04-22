@@ -10,16 +10,16 @@ import threading
 import logging
 import subprocess
 import platform
-
-from tkinter.messagebox import YES  # 导入threading模块
-
-
+import shutil
+import commands
 
 # class _InterTimer 
 CMAKE_VERSION = "3.23.1"
+NINJA_VERSION = "1.10.2"
 SCRIPT_DIR = os.path.dirname(os.path.realpath(sys.argv[0]))
 SRC_DIR = os.path.normpath(os.path.join(SCRIPT_DIR, os.pardir, os.pardir))
 TOOLS_DIR = os.path.normpath(os.path.join(SRC_DIR, 'tools'))
+NINJA_ROOT_DIR = os.path.normpath(os.path.join(TOOLS_DIR, platform.system(), 'ninja'))
 CMAKE_ROOT_DIR = os.path.normpath(os.path.join(TOOLS_DIR, platform.system(), 'cmake'))
 CMAKE_SOURCE_DIR = os.path.normpath(os.path.join(TOOLS_DIR, 'cmake', 'source'))
 CMAKE_BUILD_SCRIPT = os.path.normpath(os.path.join(CMAKE_SOURCE_DIR, 'cmake-3.23.1', 'bootstrap'))
@@ -65,19 +65,36 @@ def CheckCmakeTools():
     os.chdir(cur_dir)
     print("depot tools 3CheckCmakeTools:"+cur_dir)
     
-    cmd = "{0} -version".format(
-        os.path.normpath(os.path.join(CMAKE_ROOT_DIR, '3.23.1', 'bin', 'cmake')))
+    cmd = "{0} --version".format(
+        os.path.normpath(os.path.join(CMAKE_ROOT_DIR, CMAKE_VERSION, 'bin', 'cmake')))
     
-    result = subprocess.call(cmd, shell=True)
-    print("======result:",result)
-    if result == 0:
-        return os.path.normpath(os.path.join(CMAKE_ROOT_DIR, '3.23.1'))
+    cmake_version_status = commands.getstatusoutput(cmd)
+    if cmake_version_status[0] == 0:
+        cmd = "{0} --version".format(
+            os.path.normpath(os.path.join(CMAKE_ROOT_DIR, CMAKE_VERSION, 'bin', 'ninja')))
+        ninja_version_status = commands.getstatusoutput(cmd)
+        # print("{0} \r\ncode:{1}".format(ninja_version_status[1], ninja_version_status[0]))
+        # return
+        if ninja_version_status[0] == 0:
+            return os.path.normpath(os.path.join(CMAKE_ROOT_DIR, CMAKE_VERSION))
+        else:
+            # pass
+            print("{0} \r\ncode:{1}".format(ninja_version_status[1], ninja_version_status[0]))
+            # raise Exception('error') 
     else:
+        print("{0} \r\ncode:{1}".format(cmake_version_status[1], cmake_version_status[0]))
         pass
+
+    # result_cmaker_version = subprocess.call(cmd, shell=True)
+    # print("======result:",result)
+    # if result == 0:
+    #     return os.path.normpath(os.path.join(CMAKE_ROOT_DIR, CMAKE_VERSION))
+    # else:
+    #     pass
 
     # return
     t1 = threading.Timer(1, function=run)  # 创建定时器
-    print("====================1start")
+    print("====================1start cmake")
     t1.start()  # 开始执行线程
     cmake_tar_file = os.path.join(CMAKE_SOURCE_DIR, 'cmake-3.23.1.tar.gz')
     if os.path.exists(os.path.join(CMAKE_SOURCE_DIR, 'cmake-3.23.1')):
@@ -89,36 +106,83 @@ def CheckCmakeTools():
         # for name in names:
         #     # print(name)
         #     tar.extract(name, path=os.path.join(CMAKE_ROOT_DIR, 'source'))
-        tar.extractall(os.path.join(CMAKE_ROOT_DIR, 'source'))
+        tar.extractall(CMAKE_SOURCE_DIR)
         tar.close()
     
     global isStop
-    isStop = YES
+    isStop = True
     t1.cancel()
     t1.join()
-    print("====================2end")
+    print("====================2end cmake")
     # tar.extractall(os.path.join(CMAKE_ROOT_DIR, 'source'))
     # 解压到上级目录
 
+    if cmake_version_status[0] != 0:
+        os.chdir(os.path.join(CMAKE_SOURCE_DIR, 'cmake-3.23.1'))
+        os.makedirs("cmake-build")
+        os.chdir("cmake-build")
 
-    os.chdir(os.path.join(CMAKE_SOURCE_DIR, 'cmake-3.23.1'))
-    os.makedirs("cmake-build")
-    os.chdir("cmake-build")
+        cmd = "{0} --prefix={1}".format(
+            CMAKE_BUILD_SCRIPT,
+            os.path.normpath(os.path.join(CMAKE_ROOT_DIR, CMAKE_VERSION)))
+        logging.info('cmd:%s', cmd)
+        subprocess.call(cmd, shell=True)
 
-    cmd = "{0} --prefix={1}".format(
-        CMAKE_BUILD_SCRIPT,
-        os.path.normpath(os.path.join(CMAKE_ROOT_DIR, CMAKE_VERSION)))
-    logging.info('cmd:%s', cmd)
-    subprocess.call(cmd, shell=True)
+        subprocess.call("make -j4 && make install", shell=True)
 
-    subprocess.call("make -j4 && make install", shell=True)
+    # 编译并安装ninja
 
-    cmd = "{0} -version".format(
-        os.path.normpath(os.path.join(CMAKE_ROOT_DIR, '3.23.1', 'bin', 'cmake')))
+    t1 = threading.Timer(1, function=run)  # 创建定时器
+    print("====================1start ninja")
+    isStop = False
+    t1.start()  # 开始执行线程
+    cmake_tar_file = os.path.join(CMAKE_SOURCE_DIR, 'ninja-1.10.2.tar.gz')
+    if os.path.exists(os.path.join(CMAKE_SOURCE_DIR, 'ninja-1.10.2')):
+        pass
+    else:
+        print("depot tools cmake_tar_file:"+cmake_tar_file)
+        tar = tarfile.open(cmake_tar_file)
+        # names = tar.getnames()
+        # for name in names:
+        #     # print(name)
+        #     tar.extract(name, path=os.path.join(CMAKE_ROOT_DIR, 'source'))
+        tar.extractall(CMAKE_SOURCE_DIR)
+        tar.close()
+    
+    isStop = True
+    t1.cancel()
+    t1.join()
+    print("====================2end ninja")
+    # 解压ninja完成，开始编译
+    if ninja_version_status[0] != 0:
+        os.chdir(os.path.join(CMAKE_SOURCE_DIR, 'ninja-1.10.2'))
+        cmd = "cmake -Bbuild-cmake -H. --install-prefix={0}".format(
+            os.path.normpath(os.path.join(NINJA_ROOT_DIR, NINJA_VERSION))
+        )
+        subprocess.call(cmd, shell=True)
+
+        subprocess.call("cmake --build build-cmake", shell=True)
+        os.chdir("build-cmake")
+        subprocess.call("make install", shell=True)
+        os.chdir(cur_dir)
+
+        cmd = "{0} --version".format(
+            os.path.normpath(os.path.join(NINJA_ROOT_DIR, NINJA_VERSION, 'bin', 'ninja')))
+        
+        result = subprocess.call(cmd, shell=True)
+        print("======result:",result)
+        if result == 0:
+            src_ninja_file = os.path.normpath(os.path.join(NINJA_ROOT_DIR, NINJA_VERSION, 'bin', 'ninja'))
+            dist_ninja_file = os.path.normpath(os.path.join(CMAKE_ROOT_DIR, CMAKE_VERSION, 'bin', 'ninja'))
+            shutil.copyfile(src_ninja_file, dist_ninja_file)
+            shutil.copymode(src_ninja_file, dist_ninja_file)
+
+    cmd = "{0} --version".format(
+        os.path.normpath(os.path.join(CMAKE_ROOT_DIR, CMAKE_VERSION, 'bin', 'cmake')))
     
     result = subprocess.call(cmd, shell=True)
     print("======result:",result)
-    if result:
+    if result == 0:
         return os.path.normpath(os.path.join(CMAKE_ROOT_DIR, '3.23.1'))
     else:
         return None
