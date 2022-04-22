@@ -389,7 +389,10 @@ def BuildAar(archs,
     # ' '.join(
     #     [k + '=' + _EncodeForGN(v)
     #      for k, v in extra_gn_args.items()])
-
+    global ANDROID_CMAKE_ROOT_DIR
+    if not ANDROID_CMAKE_ROOT_DIR:
+        ANDROID_CMAKE_ROOT_DIR = depot_tools.CheckCmakeTools()
+        print("build_aar.py CheckCmakeTools ret:", ANDROID_CMAKE_ROOT_DIR)
     # 向 local.properties 写入配置
     print("====ANDROID_CMAKE_ROOT_DIR:"+ANDROID_CMAKE_ROOT_DIR)
     if not ANDROID_CMAKE_ROOT_DIR:
@@ -458,9 +461,6 @@ def main():
     # logging.info("MANIFEST_FILE:%s", MANIFEST_FILE)
     # logging.info('info  yuhaoo args:%s', args)
     # 检查是否安装了指定版本的 cmake
-    ret = depot_tools.CheckCmakeTools()
-    print("build_aar.py CheckCmakeTools ret:",ret)
-    return
     BuildAar(args.arch, args.output, args.extra_gn_args,
              args.build_dir, args.extra_gn_switches, args.extra_ninja_switches)
 
