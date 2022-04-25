@@ -238,6 +238,7 @@ def Build(build_dir, arch, extra_gn_args, extra_gn_switches,
          for k, v in android_config_dict.items()])
     print(android_config_dict)
     print("=========gn_args_str"+gn_args_str)
+    print("=========extra_gn_switches",extra_gn_switches)
     gn_args_list = ['gen', output_directory, gn_args_str]
     gn_args_list.extend(extra_gn_switches)
     _RunGN(gn_args_list)
@@ -322,6 +323,8 @@ def BuildAar(archs,
     extra_gn_args = extra_gn_args or []
     extra_gn_switches = extra_gn_switches or []
     extra_ninja_switches = extra_ninja_switches or []
+    logging.info('BuildAar  yuhaoo tempfile.mkdtemp():%s', tempfile.mkdtemp())
+    logging.info('BuildAar  yuhaoo 1ext_build_dir:%s', ext_build_dir)
     build_dir = ext_build_dir if ext_build_dir else tempfile.mkdtemp()
     logging.info('BuildAar  yuhaoo archs:%s', archs)
     logging.info('BuildAar  yuhaoo output_file:%s', output_file)
@@ -395,6 +398,7 @@ def BuildAar(archs,
         print("build_aar.py CheckCmakeTools ret:", ANDROID_CMAKE_ROOT_DIR)
     # 向 local.properties 写入配置
     print("====ANDROID_CMAKE_ROOT_DIR:"+ANDROID_CMAKE_ROOT_DIR)
+    return
     if not ANDROID_CMAKE_ROOT_DIR:
         print("cmake.dir is not config")
     else:

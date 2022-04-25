@@ -142,7 +142,7 @@ def main():
             build_dir,
             build_args,
             architectures)
-        logging.info('cmd:%s', cmd)
+        logging.info('msl build cmd:%s', cmd)
         subprocess.call(cmd, shell=True)
 
         # chmod(OUTPUT_DIR)

@@ -12,6 +12,8 @@ import subprocess
 import platform
 import shutil
 import commands
+import copy
+import operator
 
 # class _InterTimer 
 CMAKE_VERSION = "3.23.1"
@@ -25,36 +27,102 @@ CMAKE_SOURCE_DIR = os.path.normpath(os.path.join(TOOLS_DIR, 'cmake', 'source'))
 CMAKE_BUILD_SCRIPT = os.path.normpath(os.path.join(CMAKE_SOURCE_DIR, 'cmake-3.23.1', 'bootstrap'))
 print("depot tools CMAKE_ROOT_DIR:"+CMAKE_ROOT_DIR)
 
-isStop = False
-count = 0
-def run():  # 定义方法
-    global isStop
-    global count
-    while isStop == False:
-        t = threading.currentThread()
-        # print('Thread id : %d' % t.ident)
-        # print(datetime.datetime.now())  # 输出当前时间
-        print("\r", end="")
-        i = 20
-        print("Download progress: {}%: ".format(count), "▋" * count, end="")
-        sys.stdout.flush()
-        time.sleep(0.5)
-        count = count + 1
-    print("")
-    # timer = threading.Timer(1, run)  # 每秒运行
-    # timer.start()  # 执行方法
-    # timer.cancel()
-    
 
-def progress_bar():
-    for i in range(1, 101):
-        # print("\r", end="")
-        # print("Download progress: {}%: ".format(i), "▋" * (i // 2), end="")
-        sys.stdout.flush()
-        time.sleep(0.05)
+class Count:
+
+    def __init__(self):
+        self.num = 0
+
+    def add(self):
+        self.num = self.num + 1
+
+    def sub(self):
+        self.num = self.num - 1
+
+    def set(self, cnt):
+        self.num = cnt
+
+    def cnt(self):
+        return self.num
+
+
+def progressBar(progress, total):
+    i = progress * 100 / total
+    ir = str(i).rjust(3, " ")
+    print("\r", end="")
+    if i >= 100:
+        print("Extract progress: {}%: ".format(ir), "▋" * (i // 2))
+    else:
+        print("Extract progress: {}%: ".format(ir), "▋" * (i // 2), end="")   
+    sys.stdout.flush()
+    # print("==progressbar", progress, total)
+
+
+def showProgress(file_numbers, total_number):
+    while True:
+        # print("====================")
+        num = file_numbers.cnt()
+        if num > 0:
+            time.sleep(0.5)
+            # print("====================")
+            progressBar(total_number - num, total_number)
+        else:
+            break
+    progressBar(total_number, total_number)
+
+
+def extract_file(file_name, path="."):
+    progressBar(0, 100)
+    tar = tarfile.open(file_name)
+    members = tar.getmembers()
+    file_count = len(members)
+    file_numbers = Count()
+    file_numbers.set(file_count)
+    t = threading.Thread(target=showProgress, args=(file_numbers, file_count,))
+    t.setDaemon(True)
+    t.start()
+    directories = []
+    i = 0
+    for tarinfo in members:
+        if tarinfo.isdir():
+            # Extract directories with a safe mode.
+            directories.append(tarinfo)
+            tarinfo = copy.copy(tarinfo)
+            tarinfo.mode = 0700
+        tar.extract(tarinfo, path)
+        i = i + 1
+        # print(i, file_count)
+        if i != file_count:
+            file_numbers.sub()
+
+    # print("=============file_numbers cnt:", file_numbers.cnt())
+    # Reverse sort directories.
+    directories.sort(key=operator.attrgetter('name'))
+    directories.reverse()
+
+    # Set correct owner, mtime and filemode on directories.
+    for tarinfo in directories:
+        dirpath = os.path.join(path, tarinfo.name)
+        try:
+            tar.chown(tarinfo, dirpath)
+            tar.utime(tarinfo, dirpath)
+            tar.chmod(tarinfo, dirpath)
+        except tarfile.ExtractError as e:
+            if tar.errorlevel > 1:
+                raise
+            else:
+                raise Exception(1, "tarfile: %s" % e)
+
+    tar.close()
+    file_numbers.sub()
+    # print("=============file_numbers2 cnt:", file_numbers.cnt())
+    t.join()
+
 
 def CheckCmakeTools():
     print("depot tools CheckCmakeTools")
+    cmake_version_status = [-1, -1]
+    ninja_version_status = [-1, -1]
     cur_dir = os.getcwd()
     os.chdir(TOOLS_DIR)
     if os.path.exists(os.path.join(TOOLS_DIR, platform.system(), 'cmake')):
@@ -83,36 +151,16 @@ def CheckCmakeTools():
             # raise Exception('error') 
     else:
         print("{0} \r\ncode:{1}".format(cmake_version_status[1], cmake_version_status[0]))
-        pass
+        # pass
 
-    # result_cmaker_version = subprocess.call(cmd, shell=True)
-    # print("======result:",result)
-    # if result == 0:
-    #     return os.path.normpath(os.path.join(CMAKE_ROOT_DIR, CMAKE_VERSION))
-    # else:
-    #     pass
 
-    # return
-    t1 = threading.Timer(1, function=run)  # 创建定时器
-    print("====================1start cmake")
-    t1.start()  # 开始执行线程
     cmake_tar_file = os.path.join(CMAKE_SOURCE_DIR, 'cmake-3.23.1.tar.gz')
     if os.path.exists(os.path.join(CMAKE_SOURCE_DIR, 'cmake-3.23.1')):
         pass
     else:
-        print("depot tools cmake_tar_file:"+cmake_tar_file)
-        tar = tarfile.open(cmake_tar_file)
-        # names = tar.getnames()
-        # for name in names:
-        #     # print(name)
-        #     tar.extract(name, path=os.path.join(CMAKE_ROOT_DIR, 'source'))
-        tar.extractall(CMAKE_SOURCE_DIR)
-        tar.close()
+        print("extract file:" + cmake_tar_file)
+        extract_file(cmake_tar_file, CMAKE_SOURCE_DIR)
     
-    global isStop
-    isStop = True
-    t1.cancel()
-    t1.join()
     print("====================2end cmake")
     # tar.extractall(os.path.join(CMAKE_ROOT_DIR, 'source'))
     # 解压到上级目录
@@ -131,27 +179,13 @@ def CheckCmakeTools():
         subprocess.call("make -j4 && make install", shell=True)
 
     # 编译并安装ninja
-
-    t1 = threading.Timer(1, function=run)  # 创建定时器
-    print("====================1start ninja")
-    isStop = False
-    t1.start()  # 开始执行线程
     cmake_tar_file = os.path.join(CMAKE_SOURCE_DIR, 'ninja-1.10.2.tar.gz')
     if os.path.exists(os.path.join(CMAKE_SOURCE_DIR, 'ninja-1.10.2')):
         pass
     else:
-        print("depot tools cmake_tar_file:"+cmake_tar_file)
-        tar = tarfile.open(cmake_tar_file)
-        # names = tar.getnames()
-        # for name in names:
-        #     # print(name)
-        #     tar.extract(name, path=os.path.join(CMAKE_ROOT_DIR, 'source'))
-        tar.extractall(CMAKE_SOURCE_DIR)
-        tar.close()
-    
-    isStop = True
-    t1.cancel()
-    t1.join()
+        print("extract file:" + cmake_tar_file)
+        extract_file(cmake_tar_file, CMAKE_SOURCE_DIR)
+
     print("====================2end ninja")
     # 解压ninja完成，开始编译
     if ninja_version_status[0] != 0:
@@ -169,13 +203,17 @@ def CheckCmakeTools():
         cmd = "{0} --version".format(
             os.path.normpath(os.path.join(NINJA_ROOT_DIR, NINJA_VERSION, 'bin', 'ninja')))
         
-        result = subprocess.call(cmd, shell=True)
-        print("======result:",result)
-        if result == 0:
+        # result = subprocess.call(cmd, shell=True)
+        ninja_version_status = commands.getstatusoutput(cmd)
+        print("======ninja_version_status:",ninja_version_status)
+        if ninja_version_status[0] == 0:
             src_ninja_file = os.path.normpath(os.path.join(NINJA_ROOT_DIR, NINJA_VERSION, 'bin', 'ninja'))
             dist_ninja_file = os.path.normpath(os.path.join(CMAKE_ROOT_DIR, CMAKE_VERSION, 'bin', 'ninja'))
             shutil.copyfile(src_ninja_file, dist_ninja_file)
             shutil.copymode(src_ninja_file, dist_ninja_file)
+        else:
+            print("{0} \r\ncode:{1}".format(ninja_version_status[1], ninja_version_status[0]))
+            raise Exception(1, "build ninja failure")
 
     cmd = "{0} --version".format(
         os.path.normpath(os.path.join(CMAKE_ROOT_DIR, CMAKE_VERSION, 'bin', 'cmake')))

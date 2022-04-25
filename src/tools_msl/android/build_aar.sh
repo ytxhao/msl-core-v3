@@ -11,6 +11,6 @@
 # This script has been rewritten in Python. Temporary "redirect":
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-#echo "SCRIPT_DIR:$SCRIPT_DIR"
+# echo "SCRIPT_DIR:$SCRIPT_DIR"
 p=`pwd`
 exec "$SCRIPT_DIR/build_aar.py" "$@"
