@@ -398,7 +398,7 @@ def BuildAar(archs,
         print("build_aar.py CheckCmakeTools ret:", ANDROID_CMAKE_ROOT_DIR)
     # 向 local.properties 写入配置
     print("====ANDROID_CMAKE_ROOT_DIR:"+ANDROID_CMAKE_ROOT_DIR)
-    return
+
     if not ANDROID_CMAKE_ROOT_DIR:
         print("cmake.dir is not config")
     else:
