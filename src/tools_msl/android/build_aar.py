@@ -267,6 +267,41 @@ def Collect(aar_file, build_dir, arch):
                        os.path.join(abi_dir, so_file))
 
 
+def writeLocalProperties(config_file_path, config_key, config_value):
+    logging.info('writeLocalProperties config_file_path: %s', config_file_path)
+    logging.info('writeLocalProperties config_key: %s', config_key)
+    logging.info('writeLocalProperties config_value: %s', config_value)
+    config_file_dir = os.path.dirname(config_file_path)
+    config_file_name = os.path.basename(config_file_path)
+    config_tmp_file_name = os.path.normpath(os.path.join(config_file_dir, "." + config_file_name + ".bak"))
+    logging.info('writeLocalProperties config_tmp_file_name: %s', config_tmp_file_name)
+    fr = open(config_file_path, "rb")
+    fw = open(config_tmp_file_name, "wb+")
+    find_config_key = False
+    for line in fr:
+        print(line)
+        strip_line  = line.strip()
+        new_line = line
+        if strip_line.find(config_key) == 0 and strip_line.find("=") != -1:
+            find_config_key = True
+            list = strip_line.split("=")
+            line_key = list[0]
+            line_value = list[1]
+            new_line = line_key + "=" + config_value +"\r\n"
+            print("==new_line:"+ new_line)
+        fw.write(new_line)
+    if find_config_key == False:
+        fw.write("\r\n")
+        fw.write(config_key + "="+ config_value)
+    fr.close()
+    fw.close()
+    print("==find_config_key:", find_config_key)
+    os.remove(fr.name)
+    # newName = fw.name.replace(".bak","")
+    newName = config_file_path
+    os.rename(fw.name, newName)
+
+
 def ConfigCmakeDir(config_file, cmake_dir):
     logging.info('ConfigCmakeDir config_file: %s', config_file)
     logging.info('ConfigCmakeDir cmake_dir: %s', cmake_dir)
@@ -283,7 +318,7 @@ def ConfigCmakeDir(config_file, cmake_dir):
         new_line = line
         if strip_line.find("cmake.dir") == 0 and strip_line.find("=") != -1:
             find_cmake_dir = True
-            list = strip_line.split("="); 
+            list = strip_line.split("=")
             line_key = list[0]
             line_value = list[1]
             print("key:"+line_key)
@@ -402,8 +437,17 @@ def BuildAar(archs,
     if not ANDROID_CMAKE_ROOT_DIR:
         print("cmake.dir is not config")
     else:
-        ConfigCmakeDir(os.path.normpath(os.path.join(MSL_APPLICATION_DIR,'local.properties')), ANDROID_CMAKE_ROOT_DIR)
+        writeLocalProperties(os.path.normpath(os.path.join(MSL_APPLICATION_DIR,'local.properties')), "cmake.dir", ANDROID_CMAKE_ROOT_DIR)
+        # ConfigCmakeDir(os.path.normpath(os.path.join(MSL_APPLICATION_DIR,'local.properties')), ANDROID_CMAKE_ROOT_DIR)
         
+    global ANDROID_SDK_ROOT_DIR
+    if not ANDROID_SDK_ROOT_DIR:
+        print("sdk.dir is not config")
+    else:
+        writeLocalProperties(os.path.normpath(os.path.join(MSL_APPLICATION_DIR,'local.properties')), "sdk.dir", ANDROID_SDK_ROOT_DIR)
+
+    
+    return
     for i in extra_gn_args:
         print("index:%s value:%s" % (extra_gn_args.index(i), _EncodeForGN(i)))
     args_dic = {}
