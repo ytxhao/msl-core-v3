@@ -29,9 +29,6 @@ DEFAULT_ARCHS = ['arm64', 'arm']
 IOS_DEPLOYMENT_TARGET = '9.0'
 LIBVPX_BUILD_VP9 = False
 
-# sys.path.append(os.path.join(SCRIPT_DIR, '..', 'libs'))
-# from generate_licenses import LicenseBuilder
-
 
 def _ParseArgs():
     parser = argparse.ArgumentParser(description=__doc__)
@@ -114,7 +111,7 @@ def _CleanTemporary(output_dir, architectures):
                 shutil.rmtree(arch_lib_path)
 
 
-def BuildWebRTC(output_dir, target_arch, flavor, gn_target_name,
+def BuildMslCore(output_dir, target_arch, flavor, gn_target_name,
                 ios_deployment_target, libvpx_build_vp9, use_bitcode, use_goma,
                 extra_gn_args):
     output_dir = os.path.join(output_dir, target_arch + '_libs')
@@ -193,7 +190,7 @@ def main():
 
     # Build all architectures.
     for arch in architectures:
-        BuildWebRTC(args.output_dir, arch, args.build_config, gn_target_name,
+        BuildMslCore(args.output_dir, arch, args.build_config, gn_target_name,
                     IOS_DEPLOYMENT_TARGET, LIBVPX_BUILD_VP9, args.bitcode,
                     args.use_goma, gn_args)
 
