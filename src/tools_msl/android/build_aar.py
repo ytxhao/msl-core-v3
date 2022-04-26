@@ -302,53 +302,6 @@ def writeLocalProperties(config_file_path, config_key, config_value):
     os.rename(fw.name, newName)
 
 
-def ConfigCmakeDir(config_file, cmake_dir):
-    logging.info('ConfigCmakeDir config_file: %s', config_file)
-    logging.info('ConfigCmakeDir cmake_dir: %s', cmake_dir)
-    fr = open(config_file, "rb")
-    fw = open(config_file + ".bak", "wb+")
-    # lines = fr.readlines()
-    find_cmake_dir = False
-    # each = None
-    for line in fr:
-        print(line)
-        # if line in ['\n','\r\n'] or line.strip() == "":
-        #     continue
-        strip_line  = line.strip()
-        new_line = line
-        if strip_line.find("cmake.dir") == 0 and strip_line.find("=") != -1:
-            find_cmake_dir = True
-            list = strip_line.split("=")
-            line_key = list[0]
-            line_value = list[1]
-            print("key:"+line_key)
-            print("line_value:"+line_value)
-            new_line = line_key + "=" + cmake_dir
-            print("cmake new_line:"+new_line)
-            # strip_line_len = len(strip_line)
-            # pos = strip_line.find("=")
-            # strip_line.sub()
-        # else:
-        #     print("\033[31mcmake.dir config error\n\033[0m")
-        #     raise Exception('Unknown cmake.dir')
-        fw.write(new_line)
-    print("=========find_cmake_dir",find_cmake_dir)
-    if find_cmake_dir == False:
-        fw.write("\r\n")
-        fw.write("cmake.dir="+cmake_dir)
-    fr.close()
-    fw.close()
-
-    os.remove(fr.name)
-    newName = fw.name.replace(".bak","")
-    os.rename(fw.name, newName)
- 
-# def GenerateLicenses(output_dir, build_dir, archs):
-#     builder = LicenseBuilder(
-#         [_GetOutputDirectory(build_dir, arch) for arch in archs], TARGETS)
-#     builder.GenerateLicenseText(output_dir)
-
-
 def BuildAar(archs,
              output_file,
              extra_gn_args=None,
@@ -446,8 +399,6 @@ def BuildAar(archs,
     else:
         writeLocalProperties(os.path.normpath(os.path.join(MSL_APPLICATION_DIR,'local.properties')), "sdk.dir", ANDROID_SDK_ROOT_DIR)
 
-    
-    return
     for i in extra_gn_args:
         print("index:%s value:%s" % (extra_gn_args.index(i), _EncodeForGN(i)))
     args_dic = {}
@@ -466,22 +417,20 @@ def BuildAar(archs,
         gradle_arg=':msl-core:assembleRelease'
 
     os.chdir(MSL_APPLICATION_DIR)
-    cmd = "export ANDROID_SDK_ROOT={0};{1} {2} -PmslAbiFilters={3} -PmslNdkPath={4}".format(
-        ANDROID_SDK_ROOT_DIR,
+    cmd = "{0} {1} -PmslAbiFilters={2} -PmslNdkPath={3}".format(
         './gradlew',
         'clean',
         ','.join(archs),
         ANDROID_NDK_ROOT_DIR)
     subprocess.call(cmd, shell=True)
 
-    cmd = "export ANDROID_SDK_ROOT={0};{1} {2} -PmslAbiFilters={3} -PmslNdkPath={4}".format(
-            ANDROID_SDK_ROOT_DIR,
+    cmd = "{0} {1} -PmslAbiFilters={2} -PmslNdkPath={3}".format(
             './gradlew',
             gradle_arg,
             ','.join(archs),
             ANDROID_NDK_ROOT_DIR)
     logging.info('cmd:%s', cmd)
-    # subprocess.call('export ANDROID_SDK_ROOT=/Volumes/kingston/workspace/Library/Android/sdk', shell=True)
+    
     subprocess.call(cmd, shell=True)
     os.chdir(SRC_DIR)
     # 拷贝aar到相应的目录
