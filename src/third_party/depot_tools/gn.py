@@ -47,7 +47,7 @@ class Error(Exception):
 def GetBuildtoolsPlatformBinaryPath():
   """Returns the full path to the binary directory for the current platform."""
   buildtools_path = os.path.normpath(os.path.join(SRC_DIR, 'buildtools'))
-  print("----------------- buildtools_path:"+buildtools_path)
+
   if not buildtools_path:
     return None
 
@@ -97,7 +97,7 @@ def main(args):
                           'checkout.')
     return 1
   gn_path = os.path.join(bin_path, 'gn' + GetExeSuffix())
-  logging.info('-------- yuhaoo [gn_path] + args[1:]:%s', [gn_path] + args[1:])
+
   if not os.path.exists(gn_path):
     print >> sys.stderr, 'gn.py: Could not find gn executable at: %s' % gn_path
     return 2

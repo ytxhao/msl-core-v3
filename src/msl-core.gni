@@ -1,7 +1,7 @@
-print("=====15is_ios:$is_ios is_android:$is_android is_linux:$is_linux is_mac:$is_mac")
+
 import("//build/config/arm.gni")
 import("//build/config/sysroot.gni")
-print("=====16is_ios:$is_ios is_android:$is_android is_linux:$is_linux is_mac:$is_mac")
+
 if (is_ios) {
   import("//build/config/ios/rules.gni")
 }
@@ -170,10 +170,6 @@ declare_args() {
   # dependency on the Win 10 SDK v10.0.17763.0.
   rtc_enable_win_wgc = is_win
 }
-# print("===========default_android_ndk_root:$default_android_ndk_root")
-# if (!build_with_mozilla) {
-#   import("//testing/test.gni")
-# }
 
 # A second declare_args block, so that declarations within it can
 # depend on the possibly overridden variables in the first
@@ -417,15 +413,6 @@ template("rtc_test") {
       ]
     }
 
-    # When not targeting a simulator, building //base/test:google_test_runner
-    # fails, so it is added only when the test is not a real XCTest and when
-    # targeting a simulator.
-    # if (is_ios && target_cpu == "x64" && rtc_include_tests) {
-      # if (!defined(invoker.is_xctest) || !invoker.is_xctest) {
-        # xctest_module_target = "//base/test:google_test_runner"
-      # }
-    # }
-
     if (defined(absl_deps) && absl_deps != []) {
       if (!defined(deps)) {
         deps = []
@@ -628,7 +615,6 @@ template("rtc_static_library") {
 # For the same reason, testonly targets will always be expanded to
 # source_set in order to be sure that tests are present in the test binary.
 template("rtc_library") {
-  print("===================is_component_build:$is_component_build")
   if (is_component_build || (defined(invoker.testonly) && invoker.testonly)) {
     target_type = "source_set"
   } else {
@@ -822,7 +808,6 @@ if (is_ios) {
     umbrella_header_path =
         "$target_gen_dir/$output_name.framework/WebRTC/$output_name.h"
 
-    print("==========this_target_name:$this_target_name")
     action_foreach("create_bracket_include_headers_$target_name") {
       script = "//tools_msl/apple/copy_framework_header.py"
       sources = invoker.sources

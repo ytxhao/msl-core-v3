@@ -82,7 +82,6 @@ if (host_toolchain == "") {
   # block should have propagated a value down.
   # TODO(dpranke): Add some sort of assert here that verifies that
   # no toolchain omitted host_toolchain from its toolchain_args().
-  print("--------------BUILDCONFIG.gn host_cpu:$host_cpu is_clang:$is_clang")
   if (host_os == "linux") {
     if (target_os != "linux") {
       host_toolchain = "//build/toolchain/linux:clang_$host_cpu"
@@ -154,7 +153,6 @@ if (target_os == "android") {
 } else {
   assert(false, "Unsupported target_os: $target_os")
 }
-print("---------------custom_toolchain: $custom_toolchain _default_toolchain: $_default_toolchain")
 # If a custom toolchain has been set in the args, set it as default. Otherwise,
 # set the default toolchain for the platform (if any).
 if (custom_toolchain != "") {
@@ -180,7 +178,6 @@ if (custom_toolchain != "") {
 # Do not add more is_* variants here for random lesser-used Unix systems like
 # aix or one of the BSDs. If you need to check these, just check the
 # current_os value directly.
-print("=============current_os:$current_os")
 is_android = current_os == "android"
 is_chromeos = current_os == "chromeos"
 is_fuchsia = current_os == "fuchsia"
@@ -189,7 +186,6 @@ is_linux = current_os == "linux"
 is_mac = current_os == "mac"
 is_nacl = current_os == "nacl"
 is_win = current_os == "win" || current_os == "winuwp"
-print("=============is_mac:$is_mac")
 is_apple = is_ios || is_mac
 is_posix = !is_win && !is_fuchsia
 
@@ -244,7 +240,6 @@ if (is_win) {
   ]
 }
 
-print("============is_debug:$is_debug")
 # Debug/release-related defines.
 if (is_debug) {
   default_compiler_configs += [ "//build/config:debug" ]
@@ -305,22 +300,11 @@ if (is_win) {
   default_shared_library_configs += [ "//build/config/win:cfi_linker" ]
 }
 
-# if (is_android) {
-#   # Strip native JNI exports from shared libraries by default. Binaries that
-#   # want this can remove this config.
-#   default_shared_library_configs +=
-#       [ "//build/config/android:hide_all_but_jni_onload" ]
-# }
 set_defaults("shared_library") {
   configs = default_shared_library_configs
 }
 set_defaults("loadable_module") {
   configs = default_shared_library_configs
-
-  # loadable_modules are generally used by other libs, not just via JNI.
-  # if (is_android) {
-  #   configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
-  # }
 }
 
 # A helper for forwarding testonly and visibility.
@@ -444,9 +428,6 @@ template("component") {
 set_defaults("component") {
   if (is_component_build) {
     configs = default_shared_library_configs
-    # if (is_android) {
-    #   configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
-    # }
   } else {
     configs = default_compiler_configs
   }

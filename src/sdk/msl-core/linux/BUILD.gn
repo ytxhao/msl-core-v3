@@ -7,7 +7,6 @@
 # be found in the AUTHORS file in the root of the source tree.
 
 if (is_linux) {
-  print("======34")
   import("//msl-core.gni")
 
   group("linux") {

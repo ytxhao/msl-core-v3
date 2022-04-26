@@ -7,7 +7,6 @@ import("//build/config/clang/clang.gni")
 import("//build/config/android/config.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/toolchain/toolchain.gni")
-print("===============current_cpu:$current_cpu")
 if (current_cpu == "arm" || current_cpu == "arm64") {
   import("//build/config/arm.gni")
 }
@@ -710,9 +709,8 @@ config("compiler") {
 
   # Pass flag to LLD so Android builds can allow debuggerd to properly symbolize
   # stack crashes (http://crbug.com/919499).
-  if (defined(default_android_ndk_major_version)) {
-    print("==========yu default_android_ndk_major_version:$default_android_ndk_major_version")
-  }
+  # if (defined(default_android_ndk_major_version)) {
+  # }
   if (use_lld && is_android && default_android_ndk_major_version >= 22) {
     ldflags += [ "-Wl,--no-rosegment" ]
   }
@@ -1221,27 +1219,6 @@ config("compiler_deterministic") {
   }
 }
 
-# config("clang_revision") {
-#   if (is_clang && clang_base_path == default_clang_base_path) {
-#     update_args = [
-#       "--print-revision",
-#       "--verify-version=$clang_version",
-#     ]
-#     if (llvm_force_head_revision) {
-#       update_args += [ "--llvm-force-head-revision" ]
-#     }
-#     clang_revision = exec_script("//tools/clang/scripts/update.py",
-#                                  update_args,
-#                                  "trim string")
-
-#     # This is here so that all files get recompiled after a clang roll and
-#     # when turning clang on or off. (defines are passed via the command line,
-#     # and build system rebuild things when their commandline changes). Nothing
-#     # should ever read this define.
-#     defines = [ "CR_CLANG_REVISION=\"$clang_revision\"" ]
-#   }
-# }
-
 config("compiler_arm_fpu") {
   if (current_cpu == "arm" && !is_ios && !is_nacl) {
     cflags = [ "-mfpu=$arm_fpu" ]
@@ -1290,7 +1267,6 @@ config("runtime_library") {
 
   # TODO(crbug.com/830987): Come up with a better name for is POSIX + Fuchsia
   # configuration.
-  print("============123is_posix:$is_posix")
   if (is_posix || is_fuchsia) {
     configs += [ "//build/config/posix:runtime_library" ]
   }
@@ -1578,15 +1554,9 @@ config("default_warnings") {
         cflags += [ "-Wno-nonportable-include-path" ]
       }
 
-      print("================yu current_toolchain:$current_toolchain")
-      print("================yu host_toolchain:$host_toolchain")
-      print("================yu is_android:$is_android")
-
-
       if (((current_toolchain == host_toolchain || !use_xcode_clang) && !is_android) || (is_android && default_android_ndk_major_version >= 22)) {
         # Flags NaCl (Clang 3.7) and Xcode 9.2 (Clang clang-900.0.39.2) do not
         # recognize.
-        print("================yu 12is_android")
 
         cflags += [
           # An ABI compat warning we don't care about, https://crbug.com/1102157
