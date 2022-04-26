@@ -1,12 +1,5 @@
 #!/usr/bin/env python
 
-# Copyright (c) 2017 The WebRTC project authors. All Rights Reserved.
-#
-# Use of this source code is governed by a BSD-style license
-# that can be found in the LICENSE file in the root of the source
-# tree. An additional intellectual property rights grant can be found
-# in the file PATENTS.  All contributing project authors may
-# be found in the AUTHORS file in the root of the source tree.
 """iOS FAT libraries build script.
 Each architecture is compiled separately before being merged together.
 By default, the library is created in out_ios_libs/. (Change with -o.)
@@ -29,7 +22,7 @@ print("=====SRC_DIR:"+SRC_DIR)
 # import find_depot_tools
 DEPOT_TOOLS_PATH = os.path.normpath(os.path.join(SRC_DIR, 'third_party', 'depot_tools'))
 SDK_OUTPUT_DIR = os.path.join(SRC_DIR, 'out/release')
-SDK_FRAMEWORK_NAME = 'ZorroRtcEngineKit.framework'
+SDK_FRAMEWORK_NAME = 'MslCoreKit'
 
 ENABLED_ARCHS = ['arm64', 'arm', 'x64']
 DEFAULT_ARCHS = ['arm64', 'arm']
@@ -210,16 +203,16 @@ def main():
     ]
 
     # Combine the slices.
-    dylib_path = os.path.join(SDK_FRAMEWORK_NAME, 'Versions', 'Current',  'ZorroRtcEngineKit')
+    dylib_path = os.path.join(SDK_FRAMEWORK_NAME + '.framework', 'Versions', 'Current',  SDK_FRAMEWORK_NAME)
     # Dylibs will be combined, all other files are the same across archs.
     # Use distutils instead of shutil to support merging folders.
     logging.info("=====lib_paths[0]:" + lib_paths[0] + " args.output_dir:" + args.output_dir)
-    if  os.path.isdir(os.path.join(args.output_dir, SDK_FRAMEWORK_NAME)):
-        shutil.rmtree(os.path.join(args.output_dir, SDK_FRAMEWORK_NAME))
+    if  os.path.isdir(os.path.join(args.output_dir, SDK_FRAMEWORK_NAME + '.framework')):
+        shutil.rmtree(os.path.join(args.output_dir, SDK_FRAMEWORK_NAME + '.framework'))
 
     distutils.dir_util.copy_tree(
-        os.path.join(lib_paths[0], SDK_FRAMEWORK_NAME),
-        os.path.join(args.output_dir, SDK_FRAMEWORK_NAME), preserve_symlinks = True)
+        os.path.join(lib_paths[0], SDK_FRAMEWORK_NAME + '.framework'),
+        os.path.join(args.output_dir, SDK_FRAMEWORK_NAME + '.framework'), preserve_symlinks = True)
     # logging.info('Merging framework slices.')
     dylib_paths = [os.path.join(path, dylib_path) for path in lib_paths]
     out_dylib_path = os.path.join(args.output_dir, dylib_path)
@@ -232,13 +225,13 @@ def main():
     _RunCommand(cmd)
 
     # Merge the dSYM slices.
-    lib_dsym_dir_path = os.path.join(lib_paths[0], 'ZorroRtcEngineKit.dSYM')
+    lib_dsym_dir_path = os.path.join(lib_paths[0], SDK_FRAMEWORK_NAME + '.dSYM')
     if os.path.isdir(lib_dsym_dir_path):
         distutils.dir_util.copy_tree(
-            lib_dsym_dir_path, os.path.join(args.output_dir, 'ZorroRtcEngineKit.dSYM'))
+            lib_dsym_dir_path, os.path.join(args.output_dir, SDK_FRAMEWORK_NAME + '.dSYM'))
         # logging.info('Merging dSYM slices.')
-        dsym_path = os.path.join('ZorroRtcEngineKit.dSYM', 'Contents', 'Resources',
-                                 'DWARF', 'ZorroRtcEngineKit')
+        dsym_path = os.path.join(SDK_FRAMEWORK_NAME + '.dSYM', 'Contents', 'Resources',
+                                 'DWARF', SDK_FRAMEWORK_NAME)
         lib_dsym_paths = [os.path.join(path, dsym_path) for path in lib_paths]
         out_dsym_path = os.path.join(args.output_dir, dsym_path)
         try:
@@ -261,7 +254,7 @@ def main():
         # Modify the version number.
         # Format should be <Branch cut MXX>.<Hotfix #>.<Rev #>.
         # e.g. 55.0.14986 means branch cut 55, no hotfixes, and revision 14986.
-        infoplist_path = os.path.join(args.output_dir, SDK_FRAMEWORK_NAME, 'Resources',
+        infoplist_path = os.path.join(args.output_dir, SDK_FRAMEWORK_NAME + '.framework', 'Resources',
                                       'Info.plist')
         cmd = [
             'PlistBuddy', '-c', 'Print :CFBundleShortVersionString',
@@ -277,8 +270,8 @@ def main():
         _RunCommand(cmd)
         _RunCommand(['plutil', '-convert', 'binary1', infoplist_path])
 
-    	out_dsym_dir = os.path.join(args.output_dir, 'ZorroRtcEngineKit.dSYM')
-    	renamed_out_dsym_dir = os.path.join(args.output_dir, 'ZorroRtcEngineKit.framework.dSYM')
+    	out_dsym_dir = os.path.join(args.output_dir, SDK_FRAMEWORK_NAME + '.dSYM')
+    	renamed_out_dsym_dir = os.path.join(args.output_dir, SDK_FRAMEWORK_NAME + '.framework.dSYM')
     	if os.path.exists(renamed_out_dsym_dir):
       	    shutil.rmtree(renamed_out_dsym_dir)
         logging.info("out_dsym_dir:" + out_dsym_dir + " renamed_out_dsym_dir:" + renamed_out_dsym_dir)
