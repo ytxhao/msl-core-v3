@@ -34,7 +34,7 @@ def GenerateUmbrellaHeader():
      */\n\n""" % datetime.datetime.now().year))
 
         for s in args.sources:
-      		outfile.write("#import <ZorroRtcEngineKit/{}>\n".format(os.path.basename(s)))
+      		outfile.write("#import <MslCoreKit/{}>\n".format(os.path.basename(s)))
 
     return 0
 

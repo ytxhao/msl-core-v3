@@ -19,7 +19,7 @@ def replace_double_quote(line):
     if not match:
         return line
 
-    return '%s#import <ZorroRtcEngineKit/%sRTC%s.h>%s' % (match.group(1), match.group(3),
+    return '%s#import <MslCoreKit/%sRTC%s.h>%s' % (match.group(1), match.group(3),
                                                match.group(4), match.group(5))
 
 

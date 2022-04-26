@@ -116,7 +116,7 @@ if (is_ios) {
   if (is_ios) {
       ios_framework_bundle_with_umbrella_header("framework_objc") {
         info_plist = "objc/Info.plist"
-        output_name = "ZorroRtcEngineKit"
+        output_name = "MslCoreKit"
 
         common_objc_headers = [
           # "objc/base/RTCCodecSpecificInfo.h",
@@ -184,7 +184,7 @@ if (is_ios) {
 
       bundle_data("ios_framework_bundle") {
         deps = [ "//sdk/msl-core:framework_objc" ]
-        sources = [ "$root_build_dir/ZorroRtcEngineKit.framework" ]
+        sources = [ "$root_build_dir/MslCoreKit.framework" ]
         outputs = [ "{{bundle_resources_dir}}/Frameworks/{{source_file_part}}" ]
       }
     }
@@ -196,7 +196,7 @@ if (is_mac) {
   if (is_mac) {
       mac_framework_bundle_with_umbrella_header("mac_framework_objc") {
         info_plist = "objc/Info.plist"
-        output_name = "ZorroRtcEngineKit"
+        output_name = "MslCoreKit"
 
         sources = [
           # "objc/base/RTCCodecSpecificInfo.h",
@@ -260,7 +260,7 @@ if (is_mac) {
 
       bundle_data("mac_framework_bundle") {
         deps = [ "//sdk/msl-core:mac_framework_objc" ]
-        sources = [ "$root_build_dir/ZorroRtcEngineKit.framework" ]
+        sources = [ "$root_build_dir/MslCoreKit.framework" ]
         outputs = [ "{{bundle_resources_dir}}/Frameworks/{{source_file_part}}" ]
       }
     }
