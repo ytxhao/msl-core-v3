@@ -716,7 +716,9 @@ config("compiler") {
 
   # Pass flag to LLD so Android builds can allow debuggerd to properly symbolize
   # stack crashes (http://crbug.com/919499).
-  print("==========yu default_android_ndk_major_version:$default_android_ndk_major_version")
+  if (defined(default_android_ndk_major_version)) {
+    print("==========yu default_android_ndk_major_version:$default_android_ndk_major_version")
+  }
   if (use_lld && is_android && default_android_ndk_major_version >= 22) {
     ldflags += [ "-Wl,--no-rosegment" ]
   }
