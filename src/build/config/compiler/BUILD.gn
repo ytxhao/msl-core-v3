@@ -316,7 +316,6 @@ config("compiler") {
     }
 
     if (use_lld) {
-      # yuhaoo test for linux
       # ldflags += [ "-fuse-ld=lld" ]
       if (lld_path != "") {
         ldflags += [ "-B$lld_path" ]

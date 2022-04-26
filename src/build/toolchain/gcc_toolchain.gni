@@ -624,11 +624,8 @@ template("clang_toolchain") {
     cxx = "$prefix/clang++"
     ld = cxx
     readelf = "${toolprefix}readelf"
-    # yuhaoo test for linux
     ar = "${prefix}/llvm-ar"
     nm = "${prefix}/llvm-nm"
-    # ar = "${prefix}/ar"
-    # nm = "${prefix}/nm"
 
     forward_variables_from(invoker,
                            [

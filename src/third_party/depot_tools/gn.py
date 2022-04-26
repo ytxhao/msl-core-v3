@@ -19,8 +19,7 @@ import threading
 
 SCRIPT_DIR = os.path.dirname(os.path.realpath(sys.argv[0]))
 SRC_DIR = os.path.normpath(os.path.join(SCRIPT_DIR, os.pardir, os.pardir))
-print("-------------yuhao SCRIPT_DIR:"+SCRIPT_DIR)
-print("-------------yuhao SRC_DIR:"+SRC_DIR)
+
 def PruneVirtualEnv():
   # Set by VirtualEnv, no need to keep it.
   os.environ.pop('VIRTUAL_ENV', None)
