@@ -262,14 +262,14 @@ def writeLocalProperties(config_file_path, config_key, config_value):
             line_key = list[0]
             line_value = list[1]
             new_line = line_key + "=" + config_value +"\r\n"
-            print("==new_line:"+ new_line)
+            # print("==new_line:"+ new_line)
         fw.write(new_line)
     if find_config_key == False:
         fw.write("\r\n")
         fw.write(config_key + "="+ config_value)
     fr.close()
     fw.close()
-    print("==find_config_key:", find_config_key)
+
     os.remove(fr.name)
     # newName = fw.name.replace(".bak","")
     newName = config_file_path
