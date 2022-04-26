@@ -35,53 +35,14 @@ config("common_inherited_config") {
   defines = []
   cflags = []
   ldflags = []
-
-  if (is_posix || is_fuchsia) {
-    defines += [ "WEBRTC_POSIX" ]
-  }
-  if (is_ios) {
-    defines += [
-      "WEBRTC_MAC",
-      "WEBRTC_IOS",
-    ]
-  }
-  if (is_linux || is_chromeos) {
-    defines += [ "WEBRTC_LINUX" ]
-  }
-  if (is_mac) {
-    defines += [ "WEBRTC_MAC" ]
-  }
-  if (is_fuchsia) {
-    defines += [ "WEBRTC_FUCHSIA" ]
-  }
-  if (is_win) {
-    defines += [ "WEBRTC_WIN" ]
-  }
-  if (is_android) {
-    defines += [
-      "WEBRTC_LINUX",
-      "WEBRTC_ANDROID",
-    ]
-
-    if (build_with_mozilla) {
-      defines += [ "WEBRTC_ANDROID_OPENSLES" ]
-    }
-  }
-  if (is_chromeos) {
-    defines += [ "CHROMEOS" ]
-  }
 }
 
-# TODO(bugs.webrtc.org/9693): Remove the possibility to suppress this warning
-# as soon as WebRTC compiles without it.
 config("no_exit_time_destructors") {
   if (is_clang) {
     cflags = [ "-Wno-exit-time-destructors" ]
   }
 }
 
-# TODO(bugs.webrtc.org/9693): Remove the possibility to suppress this warning
-# as soon as WebRTC compiles without it.
 config("no_global_constructors") {
   if (is_clang) {
     cflags = [ "-Wno-global-constructors" ]
@@ -89,7 +50,6 @@ config("no_global_constructors") {
 }
 
 config("rtc_prod_config") {
-  # Ideally, WebRTC production code (but not test code) should have these flags.
   if (is_clang) {
     cflags = [
       "-Wexit-time-destructors",
@@ -106,21 +66,6 @@ config("common_config") {
   defines = []
 
   cflags = []
-
-  if (current_cpu == "arm64") {
-    defines += [ "WEBRTC_ARCH_ARM64" ]
-    defines += [ "WEBRTC_HAS_NEON" ]
-  }
-
-  if (current_cpu == "arm") {
-    defines += [ "WEBRTC_ARCH_ARM" ]
-    if (arm_version >= 7) {
-      defines += [ "WEBRTC_ARCH_ARM_V7" ]
-      if (arm_use_neon) {
-        defines += [ "WEBRTC_HAS_NEON" ]
-      }
-    }
-  }
 
   if (current_cpu == "mipsel") {
     defines += [ "MIPS32_LE" ]
@@ -156,15 +101,6 @@ config("common_objc") {
   frameworks = [ "Foundation.framework" ]
 }
 
-# ---- Poisons ----
-#
-# Here is one empty dummy target for each poison type (needed because
-# "being poisonous with poison type foo" is implemented as "depends on
-# //:poison_foo").
-#
-# The set of poison_* targets needs to be kept in sync with the
-# `all_poison_types` list in webrtc.gni.
-#
 group("poison_audio_codecs") {
 }
 

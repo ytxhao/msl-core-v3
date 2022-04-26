@@ -262,8 +262,7 @@ rtc_desktop_capture_supported = false
 # chromium.
 # We need absolute paths for all configs in templates as they are shared in
 # different subdirectories.
-webrtc_root = get_path_info(".", "abspath")
-
+msl_root = get_path_info(".", "abspath")
 # Global configuration that should be applied to all WebRTC targets.
 # You normally shouldn't need to include this in your target as it's
 # automatically included when using the rtc_* templates.
@@ -271,7 +270,7 @@ webrtc_root = get_path_info(".", "abspath")
 # both for WebRTC stand-alone builds and for the scenario when WebRTC
 # native code is built as part of Chromium.
 rtc_common_configs = [
-  webrtc_root + ":common_config",
+  msl_root + ":common_config",
   "//build/config/compiler:no_size_t_to_int_warning",
 ]
 
@@ -284,7 +283,7 @@ if (is_mac || is_ios) {
 # included when using the rtc_* templates. It set the defines, include paths and
 # compilation warnings that should be propagated to dependents of the targets
 # depending on the target having this config.
-rtc_common_inherited_config = webrtc_root + ":common_inherited_config"
+rtc_common_inherited_config = msl_root + ":common_inherited_config"
 
 # Common configs to remove or add in all rtc targets.
 rtc_remove_configs = []
@@ -292,8 +291,8 @@ rtc_remove_configs = []
 
 
 rtc_add_configs = rtc_common_configs
-rtc_prod_configs = [ webrtc_root + ":rtc_prod_config" ]
-rtc_library_impl_config = [ webrtc_root + ":library_impl_config" ]
+rtc_prod_configs = [ msl_root + ":rtc_prod_config" ]
+rtc_library_impl_config = [ msl_root + ":library_impl_config" ]
 
 set_defaults("rtc_test") {
   configs = rtc_add_configs
@@ -328,7 +327,7 @@ set_defaults("rtc_shared_library") {
   suppressed_configs = []
 }
 
-webrtc_default_visibility = [ webrtc_root + "/*" ]
+webrtc_default_visibility = [ msl_root + "/*" ]
 
 
 # ---- Poisons ----
@@ -408,13 +407,13 @@ template("rtc_test") {
       public_configs += invoker.public_configs
     }
     if (is_android) {
-      android_manifest = webrtc_root + "test/android/AndroidManifest.xml"
+      android_manifest = msl_root + "test/android/AndroidManifest.xml"
       use_raw_android_executable = false
       min_sdk_version = 21
       target_sdk_version = 23
       deps += [
         "//build/android/gtest_apk:native_test_instrumentation_test_runner_java",
-        webrtc_root + "test:native_test_java",
+        msl_root + "test:native_test_java",
       ]
     }
 
@@ -481,7 +480,7 @@ template("rtc_source_set") {
         deps = []
       }
       foreach(p, poisonous) {
-        deps += [ webrtc_root + ":poison_" + p ]
+        deps += [ msl_root + ":poison_" + p ]
       }
       foreach(poison_type, all_poison_types) {
         allow_dep = true
@@ -496,7 +495,7 @@ template("rtc_source_set") {
           }
         }
         if (!allow_dep) {
-          assert_no_deps += [ webrtc_root + ":poison_" + poison_type ]
+          assert_no_deps += [ msl_root + ":poison_" + poison_type ]
         }
       }
     }
@@ -565,7 +564,7 @@ template("rtc_static_library") {
         deps = []
       }
       foreach(p, poisonous) {
-        deps += [ webrtc_root + ":poison_" + p ]
+        deps += [ msl_root + ":poison_" + p ]
       }
       foreach(poison_type, all_poison_types) {
         allow_dep = true
@@ -580,7 +579,7 @@ template("rtc_static_library") {
           }
         }
         if (!allow_dep) {
-          assert_no_deps += [ webrtc_root + ":poison_" + poison_type ]
+          assert_no_deps += [ msl_root + ":poison_" + poison_type ]
         }
       }
     }
@@ -667,7 +666,7 @@ template("rtc_library") {
         deps = []
       }
       foreach(p, poisonous) {
-        deps += [ webrtc_root + ":poison_" + p ]
+        deps += [ msl_root + ":poison_" + p ]
       }
       foreach(poison_type, all_poison_types) {
         allow_dep = true
@@ -682,7 +681,7 @@ template("rtc_library") {
           }
         }
         if (!allow_dep) {
-          assert_no_deps += [ webrtc_root + ":poison_" + poison_type ]
+          assert_no_deps += [ msl_root + ":poison_" + poison_type ]
         }
       }
     }
@@ -782,7 +781,7 @@ template("rtc_shared_library") {
         deps = []
       }
       foreach(p, poisonous) {
-        deps += [ webrtc_root + ":poison_" + p ]
+        deps += [ msl_root + ":poison_" + p ]
       }
       foreach(poison_type, all_poison_types) {
         allow_dep = true
@@ -797,7 +796,7 @@ template("rtc_shared_library") {
           }
         }
         if (!allow_dep) {
-          assert_no_deps += [ webrtc_root + ":poison_" + poison_type ]
+          assert_no_deps += [ msl_root + ":poison_" + poison_type ]
         }
       }
     }
