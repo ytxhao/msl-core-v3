@@ -40,7 +40,6 @@ gcc_toolchain("arm64") {
     current_os = "linux"
 
     # reclient does not support gcc.
-    use_rbe = false
     is_clang = false
   }
 }
@@ -61,7 +60,6 @@ gcc_toolchain("arm") {
     current_os = "linux"
 
     # reclient does not support gcc.
-    use_rbe = false
     is_clang = false
   }
 }
@@ -117,7 +115,6 @@ gcc_toolchain("x86") {
     current_os = "linux"
 
     # reclient does not support gcc.
-    use_rbe = false
     is_clang = false
   }
 }
@@ -172,13 +169,6 @@ clang_toolchain("ash_clang_x64") {
     current_os = "chromeos"
     target_os = "chromeos"
     current_cpu = current_cpu
-
-    # This turns off all of the LaCrOS-specific flags.
-    also_build_ash_chrome = false
-    chromeos_is_browser_only = false
-    ozone_platform = "x11"
-    ozone_platform_wayland = false
-    use_clang_coverage = false
   }
 }
 
@@ -199,7 +189,6 @@ gcc_toolchain("x64") {
     current_os = "linux"
 
     # reclient does not support gcc.
-    use_rbe = false
     is_clang = false
   }
 }
@@ -229,14 +218,11 @@ gcc_toolchain("mipsel") {
   nm = "${toolprefix}nm"
 
   toolchain_args = {
-    cc_wrapper = ""
     current_cpu = "mipsel"
     current_os = "linux"
 
     # reclient does not support gcc.
-    use_rbe = false
     is_clang = false
-    use_goma = false
   }
 }
 
@@ -251,14 +237,11 @@ gcc_toolchain("mips64el") {
   nm = "${toolprefix}nm"
 
   toolchain_args = {
-    cc_wrapper = ""
     current_cpu = "mips64el"
     current_os = "linux"
 
     # reclient does not support gcc.
-    use_rbe = false
     is_clang = false
-    use_goma = false
   }
 }
 
@@ -302,7 +285,6 @@ gcc_toolchain("s390x") {
     current_os = "linux"
 
     # reclient does not support gcc.
-    use_rbe = false
     is_clang = false
   }
 }
@@ -321,7 +303,6 @@ gcc_toolchain("ppc64") {
     current_os = "linux"
 
     # reclient does not support gcc.
-    use_rbe = false
     is_clang = false
   }
 }
@@ -342,7 +323,6 @@ gcc_toolchain("mips") {
     current_os = "linux"
 
     # reclient does not support gcc.
-    use_rbe = false
     is_clang = false
   }
 }
@@ -363,7 +343,6 @@ gcc_toolchain("mips64") {
     current_os = "linux"
 
     # reclient does not support gcc.
-    use_rbe = false
     is_clang = false
   }
 }

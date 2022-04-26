@@ -131,7 +131,7 @@ def _GetArmVersion(arch):
         raise Exception('Unknown arch: ' + arch)
 
 
-def Build(build_dir, arch, use_goma, extra_gn_args, extra_gn_switches,
+def Build(build_dir, arch, extra_gn_args, extra_gn_switches,
           extra_ninja_switches):
     """Generates target architecture using GN and builds it using ninja."""
     logging.info('Building: %s', arch)
@@ -143,9 +143,7 @@ def Build(build_dir, arch, use_goma, extra_gn_args, extra_gn_switches,
         # 'is_clang':False,
         'is_debug': False,
         'is_component_build': False,
-        'rtc_include_tests': False,
-        'target_cpu': _GetTargetCpu(arch),
-        'use_goma': use_goma
+        'target_cpu': _GetTargetCpu(arch)
     }
     arm_version = _GetArmVersion(arch)
     if arm_version:
@@ -159,14 +157,12 @@ def Build(build_dir, arch, use_goma, extra_gn_args, extra_gn_switches,
     _RunGN(gn_args_list)
 
     ninja_args = TARGETS[:]
-    if use_goma:
-        ninja_args.extend(['-j', '200'])
+
     ninja_args.extend(extra_ninja_switches)
     _RunNinja(output_directory, ninja_args)
 
 
 def BuildSdk(archs,
-             use_goma=False,
              extra_gn_args=None,
              ext_build_dir=None,
              extra_gn_switches=None,
@@ -177,7 +173,7 @@ def BuildSdk(archs,
     build_dir = ext_build_dir if ext_build_dir else tempfile.mkdtemp()
 
     for arch in archs:
-        Build(build_dir, arch, use_goma, extra_gn_args, extra_gn_switches,
+        Build(build_dir, arch, extra_gn_args, extra_gn_switches,
               extra_ninja_switches)
 
     if not ext_build_dir:
@@ -188,7 +184,7 @@ def main():
     args = _ParseArgs()
     logging.basicConfig(level=logging.DEBUG if args.verbose else logging.INFO)
 
-    BuildSdk(args.arch, args.use_goma, args.extra_gn_args,
+    BuildSdk(args.arch, args.extra_gn_args,
              args.build_dir, args.extra_gn_switches, args.extra_ninja_switches)
 
 

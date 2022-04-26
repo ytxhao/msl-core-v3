@@ -112,7 +112,6 @@ config("strip_all") {
 #
 # The symbolic link for $mac_sdk_path is set up by
 # //build/config/apple/sdk_info.py in //build/config/mac/mac_sdk.gni.
-# if (use_system_xcode && use_goma && target_os == "mac") {
 
 group("sdk_inputs") {
 }

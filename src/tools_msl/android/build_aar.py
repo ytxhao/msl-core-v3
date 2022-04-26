@@ -215,7 +215,7 @@ def Build(build_dir, arch, extra_gn_args, extra_gn_switches,
     android_config_dict["default_android_ndk_root"]=android_ndk_root
     android_config_dict["default_android_ndk_version"]=android_ndk_version
     android_config_dict["default_android_ndk_major_version"]=android_ndk_major_version
-    android_config_dict["default_android_sdk_root"]=android_sdk_root
+    # android_config_dict["default_android_sdk_root"]=android_sdk_root
     gn_args_str=gn_args_str +" "+ ' '.join([k + '=' + _EncodeForGN(v)
          for k, v in android_config_dict.items()])
     print(android_config_dict)

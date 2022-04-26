@@ -185,11 +185,6 @@ declare_args() {
   # other architectures.
   #
   # lld doesn't have the bug.
-  # use_icf =
-  #     (is_posix || is_fuchsia) && !is_debug && !using_sanitizer &&
-  #     !use_clang_coverage && !(is_android && use_order_profiling) &&
-  #     (use_lld || (use_gold && (is_chromeos_ash || !(current_cpu == "x86" ||
-  #                                                    current_cpu == "x64"))))
 }
 
 if (is_android) {
@@ -209,7 +204,6 @@ if (is_android) {
 
 assert(!(llvm_force_head_revision),
        "can't use goma with trunk clang")
-assert(!(llvm_force_head_revision && use_rbe), "can't use rbe with trunk clang")
 
 # default_include_dirs ---------------------------------------------------------
 #

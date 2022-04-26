@@ -113,13 +113,12 @@ def _CleanTemporary(output_dir, architectures):
 
 
 def BuildMslCore(output_dir, target_arch, flavor, gn_target_name,
-                ios_deployment_target, libvpx_build_vp9, use_bitcode, use_goma,
+                ios_deployment_target, libvpx_build_vp9, use_bitcode,
                 extra_gn_args):
     output_dir = os.path.join(output_dir, target_arch + '_libs')
     gn_args = [
         'target_os="ios"', 'ios_enable_code_signing=false',
         'use_xcode_clang=true', 'is_component_build=false',
-        'rtc_include_tests=false',
     ]
 
     # Add flavor option.
@@ -139,7 +138,7 @@ def BuildMslCore(output_dir, target_arch, flavor, gn_target_name,
 
     gn_args.append('enable_ios_bitcode=' +
                    ('true' if use_bitcode else 'false'))
-    gn_args.append('use_goma=' + ('true' if use_goma else 'false'))
+
     gn_args.append('rtc_enable_symbol_export=true')
 
     args_string = ' '.join(gn_args + extra_gn_args)
@@ -162,8 +161,7 @@ def BuildMslCore(output_dir, target_arch, flavor, gn_target_name,
         output_dir,
         gn_target_name,
     ]
-    if use_goma:
-        cmd.extend(['-j', '200'])
+
     _RunCommand(cmd)
 
 
@@ -192,7 +190,7 @@ def main():
     for arch in architectures:
         BuildMslCore(args.output_dir, arch, args.build_config, gn_target_name,
                     IOS_DEPLOYMENT_TARGET, LIBVPX_BUILD_VP9, args.bitcode,
-                    args.use_goma, gn_args)
+                    gn_args)
 
     # Create FAT archive.
     lib_paths = [
