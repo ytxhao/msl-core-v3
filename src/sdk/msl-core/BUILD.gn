@@ -1,10 +1,4 @@
-# Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
-#
-# Use of this source code is governed by a BSD-style license
-# that can be found in the LICENSE file in the root of the source
-# tree. An additional intellectual property rights grant can be found
-# in the file PATENTS.  All contributing project authors may
-# be found in the AUTHORS file in the root of the source tree.
+
 import("//msl-core.gni")
 group("sdk") {
   public_deps = []
@@ -24,44 +18,12 @@ if (is_android) {
     if (is_android) {
       public_deps = [
         ":libmsl-core",
-        # ":libms-framework",
       ]
     }
   }
 
-  # dist_jar("libms-framework") {
-  #   _target_dir_name = get_label_info(":$target_name", "dir")
-  #   output = "${root_out_dir}/lib.java${_target_dir_name}/${target_name}.jar"
-  #   print("=======dist_jar output:$output")
-  #   print("=======dist_jar _target_dir_name:$_target_dir_name")
-  #   direct_deps_only = true
-  #   use_unprocessed_jars = true
-  #   no_build_hooks = true
-  #   deps = [
-  #     ":ms_java"
-  #   ]
-  # }
-
-  # java_library("ms_java") {
-  #   sources = [
-  #     "api/media/ushow/ms/Constants.java",
-  #   ]
-  # }
-  #   shared_library("libms-core") {
-  #   visibility = [ "*" ]
-  #   sources = [ "src/test.cc" ]
-  #   ldflags = [
-  #     "-Wl,--build-id",
-  #   ]
-  #   deps = [
-  #     ":libms-core_static",
-  #   ]
-  #   output_extension = "so"
-  # }
-
   shared_library("libmsl-core") {
     visibility = [ "*" ]
-    # sources = [ "src/test.cc" ]
     ldflags = [
       "-Wl,--build-id",
       "-static-libstdc++"
@@ -75,12 +37,9 @@ if (is_android) {
 }
 
 if (is_ios || is_mac) {
-  rtc_library("zorro_objc") {
+  rtc_library("msl_objc") {
     visibility = [ "*" ]
-    # allow_poison = [
-    #   "audio_codecs",  # TODO(bugs.webrtc.org/8396): Remove.
-    #   "default_task_queue",
-    # ]
+
     configs += [
       "//:no_exit_time_destructors",
       "//:no_global_constructors",
@@ -93,20 +52,11 @@ if (is_ios || is_mac) {
     frameworks = [
       "Foundation.framework",
     ]
-    # configs += [
-    #   "..:common_objc",
-    #   ":used_from_extension",
-    # ]
-    # public_configs = [ ":common_config_objc" ]
 
     deps = [
       "src:libmsl_static",
       "//third_party/spdlog:spdlog",
     ]
-
-    # if (is_ios) {
-    #   deps += [ ":native_api_audio_device_module" ]
-    # }
   }
 }
 
@@ -119,20 +69,9 @@ if (is_ios) {
         output_name = "MslCoreKit"
 
         common_objc_headers = [
-          # "objc/base/RTCCodecSpecificInfo.h",
-          # "objc/base/RTCEncodedImage.h",
-          # "objc/base/RTCI420Buffer.h",
-          # "objc/base/RTCLogging.h",
           "objc/base/RTCMacros.h",
           "objc/api/RTCTtt.h",
         ]
-
-        # if (!build_with_chromium) {
-          # common_objc_headers += [
-            # "objc/api/logging/RTCCallbackLogger.h",
-            # "objc/api/peerconnection/RTCFileLogger.h",
-          # ]
-        # }
 
         sources = common_objc_headers
         public_headers = common_objc_headers
@@ -144,28 +83,8 @@ if (is_ios) {
         ]
 
         deps = [
-          # ":audio_objc",
-          # ":base_objc",
-          # ":default_codec_factory_objc",
-          # ":native_api",
-          # ":native_video",
-          # ":peerconnectionfactory_base_objc",
-          ":zorro_objc",
-          # ":ui_objc",
-          # ":videocapture_objc",
-          # ":videocodec_objc",
-          # ":videotoolbox_objc",
-          # "../rtc_base:rtc_base_approved",
+          ":msl_objc",
         ]
-        # if (rtc_use_metal_rendering) {
-          # deps += [ ":metal_objc" ]
-        # }
-        # if (!build_with_chromium) {
-          # deps += [
-            # ":callback_logger_objc",
-            # ":file_logger_objc",
-          # ]
-        # }
 
         frameworks = [
           "Foundation.framework",
@@ -173,13 +92,6 @@ if (is_ios) {
           "CoreMedia.framework",
           "GLKit.framework",
         ]
-
-        # configs += [
-        #   "..:common_objc",
-        #   ":used_from_extension",
-        # ]
-
-        # public_configs = [ ":common_config_objc" ]
       }
 
       bundle_data("ios_framework_bundle") {
@@ -199,42 +111,12 @@ if (is_mac) {
         output_name = "MslCoreKit"
 
         sources = [
-          # "objc/base/RTCCodecSpecificInfo.h",
-          # "objc/base/RTCEncodedImage.h",
-          # "objc/base/RTCI420Buffer.h",
           "objc/api/RTCTtt.h",
           "objc/base/RTCMacros.h",
         ]
 
-        # if (!build_with_chromium) {
-          # common_objc_headers += [
-            # "objc/api/logging/RTCCallbackLogger.h",
-            # "objc/api/peerconnection/RTCFileLogger.h",
-          # ]
-        # }
-
-        # sources = common_objc_headers
-        # public_headers = common_objc_headers
-
-        # ldflags = [
-        #   "-all_load",
-        #   "-install_name",
-        #   "@rpath/$output_name.framework/$output_name",
-        # ]
-
         deps = [
-          # ":audio_objc",
-          # ":base_objc",
-          # ":default_codec_factory_objc",
-          # ":native_api",
-          # ":native_video",
-          # ":peerconnectionfactory_base_objc",
-          ":zorro_objc",
-          # ":ui_objc",
-          # ":videocapture_objc",
-          # ":videocodec_objc",
-          # ":videotoolbox_objc",
-          # "../rtc_base:rtc_base_approved",
+          ":msl_objc",
         ]
         # if (rtc_use_metal_rendering) {
           # deps += [ ":metal_objc" ]

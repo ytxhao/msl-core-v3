@@ -29,70 +29,8 @@ rtc_static_library("libmsl_static") {
     "test.cc",
   ]
 
-  # if (is_ios) {
-  #   sources += [
-  #     "auto_gen_media_engine.mm", # auto_gen_media_engine.mm is a copy of media_engine.cc
-  #     "video_track_renderer.mm",
-  #     "iosutils.mm",
-  #     "camera_video_capturer.mm",
-  #   ]
-  # }
-
-  # if (is_android) {
-  #   sources += [
-  #     "media_engine.cc",
-  #     # "zorro_audio_processing.cc", # TODOO
-  #     "video_track_renderer.cc",
-  #     "zorro_rtc_engine_native_interface.cc",
-  #     "camera_video_capturer.cc",
-  #   ]
-  # }
-
-  # if (is_linux) {
-  #   sources += [
-  #     "media_engine.cc",
-  #     "video_track_renderer.cc",
-  #     "zorro_rtc_engine_native_interface.cc",
-  #   ]
-  # }
-
   deps = [
     "//third_party/spdlog:spdlog",
   ]
-
-  # if (is_android) {
-  #   deps += [
-  #     # "xaudio",
-  #     "../api/video_codecs:android_video_encoder_factory",
-  #     "../api/video_codecs:android_video_decoder_factory",
-  #   ]
-  # }
-
-  # if (is_ios) {
-  #   deps += [
-  #     "network",
-  #     "../sdk:videorendereradapter_objc",
-  #     "../sdk:helpers_objc",
-  #     "../sdk:videotoolbox_objc",
-  #     "../sdk:ui_objc",
-  #   ]
-  #   if (rtc_use_metal_rendering) {
-  #     deps += [ "../sdk:metal_objc" ]
-  #   }
-  # }
 }
 
-# if (is_linux) {
-#   rtc_executable("linux_sdk_test") {
-#     sources = [
-#       "test/linux_sdk_test.cc",
-#     ]
-#     deps = [
-#       ":libzorro_static",
-#       "//third_party/ffmpeg",
-#     ]
-#     include_dirs = [
-#       "//third_party/webrtc/zorro",
-#     ]
-#   }
-# }

@@ -29,7 +29,7 @@ def GenerateUmbrellaHeader():
         outfile.write(
             textwrap.dedent("""\
     /*
-     *  Copyright %d The Zorro project (ushow.media). All Rights Reserved.
+     *  Copyright %d The Msl project (ushow.media). All Rights Reserved.
      *
      */\n\n""" % datetime.datetime.now().year))
 

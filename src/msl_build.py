@@ -91,7 +91,7 @@ def main():
     print("\033[32m SRC_DIR: \033[0m" + SRC_DIR)
     print("\033[32m PROJECT_SRC_DIR: \033[0m" + PROJECT_SRC_DIR)
     print("\033[32m PROJECT_ROOT_DIR: \033[0m" + PROJECT_ROOT_DIR)
-    print("\033[32m ZORRO_DIR: \033[0m" + MSL_DIR)
+    print("\033[32m MSL_DIR: \033[0m" + MSL_DIR)
     print("\033[32m OUTPUT_DIR: \033[0m" + OUTPUT_DIR)
     start_sec = time.time()
     args = parse_args()

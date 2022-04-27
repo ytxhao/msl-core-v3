@@ -7,7 +7,7 @@
 	<key>CFBundleExecutable</key>
 	<string>MslCoreKit</string>
 	<key>CFBundleIdentifier</key>
-	<string>media.ushow.zorro</string>
+	<string>media.ushow.msl</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
