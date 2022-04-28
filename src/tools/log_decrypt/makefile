@@ -1,7 +1,13 @@
 objects = DecryptProcessor.java
 
-MKFILE_PATH := $(abspath $(lastword $(MAKEFILE_LIST)))
-MKFILE_DIR := $(dir $(MKFILE_PATH))
+# MKFILE_PATH := $(abspath $(lastword $(MAKEFILE_LIST)))
+# MKFILE_DIR := $(dir $(MKFILE_PATH))
+
+# MKFILE_PATH2 = $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
+# $(warning =======${MKFILE_PATH})
+# $(warning =======${MKFILE_PATH2})
+
+MKFILE_DIR = $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 
 SRC_DIR = src/main/java
 CLASSES_DIR = build/classes/java/main
@@ -16,7 +22,7 @@ spdlog-decrypt.jar : $(objects)
 	@mv $@ build/libs
 
 DecryptProcessor.java :
-	@javac -sourcepath ${SRC_DIR} -d ${CLASSES_DIR} ${SRC_DIR}/com/stargroup/$@
+	@javac -sourcepath ${SRC_DIR} -d ${CLASSES_DIR} $(shell find ${SRC_DIR} -type f -iname $@ | sed 's/ /\\ /g')
 
 install :
 	install -d $(PREFIX)/lib
