@@ -30,6 +30,7 @@ import depot_tools
 
 SCRIPT_DIR = os.path.dirname(os.path.realpath(sys.argv[0]))
 SRC_DIR = os.path.normpath(os.path.join(SCRIPT_DIR, os.pardir, os.pardir))
+TOOLS_DIR = os.path.normpath(os.path.join(SRC_DIR, 'tools'))
 CORE_DIR = os.path.normpath(os.path.join(SRC_DIR, 'sdk', 'msl-core'))
 MSL_APPLICATION_DIR =  os.path.normpath(os.path.join(CORE_DIR,'android','MSLApplication'))
 DEPOT_TOOLS_PATH = os.path.normpath(os.path.join(SRC_DIR, 'third_party', 'depot_tools'))
@@ -417,6 +418,13 @@ def BuildAar(archs,
     if not ext_build_dir:
         print("=========1234ext_build_dir:"+ext_build_dir)
         shutil.rmtree(build_dir, True)
+
+    # 编译log解密java库
+    if not os.path.exists(os.path.join(TOOLS_DIR, 'log_decrypt', 'lib', 'spdlog-decrypt.jar')):    
+        os.chdir(os.path.join(TOOLS_DIR, 'log_decrypt'))
+        subprocess.call("make", shell=True)
+        subprocess.call("make install", shell=True)
+        os.chdir(SRC_DIR)
 
 
 def main():
