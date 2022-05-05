@@ -30,6 +30,7 @@ if (is_android) {
     ]
     deps = [
       "//third_party/spdlog:spdlog",
+      "//third_party/curl:curl",
       "./src:libmsl_static"
     ]
     output_extension = "so"
@@ -56,6 +57,7 @@ if (is_ios || is_mac) {
     deps = [
       "src:libmsl_static",
       "//third_party/spdlog:spdlog",
+      "//third_party/curl:curl",
     ]
   }
 }

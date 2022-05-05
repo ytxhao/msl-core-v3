@@ -27,6 +27,7 @@ import sys
 import tempfile
 import re
 import depot_tools
+import distutils.dir_util
 
 SCRIPT_DIR = os.path.dirname(os.path.realpath(sys.argv[0]))
 SRC_DIR = os.path.normpath(os.path.join(SCRIPT_DIR, os.pardir, os.pardir))
@@ -34,6 +35,7 @@ TOOLS_DIR = os.path.normpath(os.path.join(SRC_DIR, 'tools'))
 CORE_DIR = os.path.normpath(os.path.join(SRC_DIR, 'sdk', 'msl-core'))
 MSL_APPLICATION_DIR =  os.path.normpath(os.path.join(CORE_DIR,'android','MSLApplication'))
 DEPOT_TOOLS_PATH = os.path.normpath(os.path.join(SRC_DIR, 'third_party', 'depot_tools'))
+THIRD_PARTY = os.path.normpath(os.path.join(SRC_DIR, 'third_party'))
 ANDROID_NDK_ROOT_DIR = ""
 ANDROID_SDK_ROOT_DIR = ""
 ANDROID_CMAKE_ROOT_DIR = ""
@@ -217,6 +219,11 @@ def Build(build_dir, arch, extra_gn_args, extra_gn_switches,
     android_config_dict["default_android_ndk_version"]=android_ndk_version
     android_config_dict["default_android_ndk_major_version"]=android_ndk_major_version
     # android_config_dict["default_android_sdk_root"]=android_sdk_root
+    if not os.path.exists(os.path.join(THIRD_PARTY, 'android_ndk', 'sources')):
+        distutils.dir_util.copy_tree(
+        os.path.join(android_ndk_root, 'sources', 'android'),
+        os.path.join(THIRD_PARTY, 'android_ndk', 'sources','android'), preserve_symlinks = True)
+
     gn_args_str=gn_args_str +" "+ ' '.join([k + '=' + _EncodeForGN(v)
          for k, v in android_config_dict.items()])
     print(android_config_dict)
