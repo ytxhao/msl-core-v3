@@ -190,7 +190,9 @@ def CheckCmakeTools():
     # 解压ninja完成，开始编译
     if ninja_version_status[0] != 0:
         os.chdir(os.path.join(CMAKE_SOURCE_DIR, 'ninja-1.10.2'))
-        cmd = "cmake -Bbuild-cmake -H. --install-prefix={0}".format(
+        # 使用刚编译完成得cmake编译ninga
+        cmd = "{0} -Bbuild-cmake -H. --install-prefix={1}".format(
+            os.path.normpath(os.path.join(CMAKE_ROOT_DIR, CMAKE_VERSION, 'bin', 'cmake')),
             os.path.normpath(os.path.join(NINJA_ROOT_DIR, NINJA_VERSION))
         )
         subprocess.call(cmd, shell=True)

@@ -366,19 +366,26 @@ def BuildAar(archs,
     if not ANDROID_CMAKE_ROOT_DIR:
         ANDROID_CMAKE_ROOT_DIR = depot_tools.CheckCmakeTools()
         print("build_aar.py CheckCmakeTools ret:", ANDROID_CMAKE_ROOT_DIR)
-    # 向 local.properties 写入配置
+    # 向 local.properties 写入配置, 如果local.properties不存在就创建一个
+    file_properties = os.path.normpath(os.path.join(MSL_APPLICATION_DIR,'local.properties'))
+    if os.path.exists(file_properties):
+        print("local.properties exist")
+    else:
+        print("local.properties not exist")
+        with open(file_properties,"w") as f:
+            pass
     print("====ANDROID_CMAKE_ROOT_DIR:"+ANDROID_CMAKE_ROOT_DIR)
 
     if not ANDROID_CMAKE_ROOT_DIR:
         print("cmake.dir is not config")
     else:
-        writeLocalProperties(os.path.normpath(os.path.join(MSL_APPLICATION_DIR,'local.properties')), "cmake.dir", ANDROID_CMAKE_ROOT_DIR)
+        writeLocalProperties(file_properties, "cmake.dir", ANDROID_CMAKE_ROOT_DIR)
         # ConfigCmakeDir(os.path.normpath(os.path.join(MSL_APPLICATION_DIR,'local.properties')), ANDROID_CMAKE_ROOT_DIR)
         
     if not ANDROID_SDK_ROOT_DIR:
         print("sdk.dir is not config")
     else:
-        writeLocalProperties(os.path.normpath(os.path.join(MSL_APPLICATION_DIR,'local.properties')), "sdk.dir", ANDROID_SDK_ROOT_DIR)
+        writeLocalProperties(file_properties, "sdk.dir", ANDROID_SDK_ROOT_DIR)
 
     for i in extra_gn_args:
         print("index:%s value:%s" % (extra_gn_args.index(i), _EncodeForGN(i)))
