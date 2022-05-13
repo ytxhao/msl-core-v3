@@ -36,7 +36,15 @@ enum LoggingSeverity {
   LZORRO = LS_ZORRO
 };
 
+
+#if RTC_LOG_ENABLED()
 void msl_print(LoggingSeverity sev,const char* file, int line, const char* fmt, ...);
+#else
+inline void void msl_print(LoggingSeverity sev,const char* file, int line, const char* fmt, ...) {
+  // Do nothing, shouldn't be invoked
+}
+#endif
+
 
 }  // namespace rtc
 

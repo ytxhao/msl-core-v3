@@ -101,6 +101,10 @@ config("common_config") {
 
   cflags = []
 
+  if (rtc_disable_logging) {
+    defines += [ "RTC_DISABLE_LOGGING" ]
+  }
+
   if (current_cpu == "mipsel") {
     defines += [ "MIPS32_LE" ]
     if (mips_float_abi == "hard") {
