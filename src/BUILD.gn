@@ -35,6 +35,40 @@ config("common_inherited_config") {
   defines = []
   cflags = []
   ldflags = []
+   if (is_posix || is_fuchsia) {
+    defines += [ "WEBRTC_POSIX" ]
+  }
+  if (is_ios) {
+    defines += [
+      "WEBRTC_MAC",
+      "WEBRTC_IOS",
+    ]
+  }
+  if (is_linux || is_chromeos) {
+    defines += [ "WEBRTC_LINUX" ]
+  }
+  if (is_mac) {
+    defines += [ "WEBRTC_MAC" ]
+  }
+  if (is_fuchsia) {
+    defines += [ "WEBRTC_FUCHSIA" ]
+  }
+  if (is_win) {
+    defines += [ "WEBRTC_WIN" ]
+  }
+  if (is_android) {
+    defines += [
+      "WEBRTC_LINUX",
+      "WEBRTC_ANDROID",
+    ]
+
+    if (build_with_mozilla) {
+      defines += [ "WEBRTC_ANDROID_OPENSLES" ]
+    }
+  }
+  if (is_chromeos) {
+    defines += [ "CHROMEOS" ]
+  }
 }
 
 config("no_exit_time_destructors") {

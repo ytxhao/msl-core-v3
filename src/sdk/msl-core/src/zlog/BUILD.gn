@@ -1,0 +1,26 @@
+import("//msl-core.gni")
+
+config("external_config") {
+  cflags = [
+    "-Wno-global-constructors",
+    "-Wno-unused-parameter",
+    "-Wno-unused-private-field"
+  ]
+}
+
+rtc_source_set("zlog") {
+  visibility = [ "*" ]
+
+  public_configs = [ ":external_config" ]
+
+  sources = [
+    "zlog.h",
+    "zlog.cc",
+  ]
+
+  public_deps = [
+    "//third_party/curl:curl",
+    "//third_party/spdlog:spdlog",
+  ]
+}
+

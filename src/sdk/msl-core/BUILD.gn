@@ -56,8 +56,8 @@ if (is_ios || is_mac) {
 
     deps = [
       "src:libmsl_static",
-      "//third_party/spdlog:spdlog",
-      "//third_party/curl:curl",
+      # "//third_party/spdlog:spdlog",
+      # "//third_party/curl:curl",
     ]
   }
 }

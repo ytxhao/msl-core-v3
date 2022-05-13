@@ -1,0 +1,23 @@
+
+import("//msl-core.gni")
+
+rtc_library("timeutils") {
+  visibility = [ "*" ]
+  sources = [
+    "system_time.cc",
+    "system_time.h",
+    "time_utils.cc",
+    "time_utils.h",
+  ]
+#   deps = [
+#     ":checks",
+#     ":safe_conversions",
+#     ":stringutils",
+#     "system:rtc_export",
+#   ]
+
+  libs = []
+  if (is_win) {
+    libs += [ "winmm.lib" ]
+  }
+}

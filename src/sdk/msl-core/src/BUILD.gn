@@ -27,10 +27,14 @@ rtc_static_library("libmsl_static") {
 
   sources = [
     "test.cc",
+    "http_request.cc"
   ]
 
   deps = [
+    "zlog",
     "//third_party/spdlog:spdlog",
+    "//third_party/curl:curl",
+    "//rtc_base:timeutils",
   ]
 }
 
