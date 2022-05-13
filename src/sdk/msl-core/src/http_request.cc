@@ -1,5 +1,5 @@
 #include "http_request.h"
-
+#include <assert.h>
 #include <curl/curl.h>
 #include <vector>
 
