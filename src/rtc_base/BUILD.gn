@@ -21,3 +21,29 @@ rtc_library("timeutils") {
     libs += [ "winmm.lib" ]
   }
 }
+
+rtc_library("logging") {
+  visibility = [ "*" ]
+  libs = []
+  deps = [
+    ":timeutils",
+  ]
+
+  configs += [
+    "..:no_exit_time_destructors",
+    "..:no_global_constructors",
+  ]
+  sources = [
+    "logging.cc",
+    "logging.h",
+  ]
+  
+  if (is_mac) {
+    frameworks = [ "Foundation.framework" ]
+  }
+
+  if (is_android) {
+    libs += [ "log" ]
+  }
+  
+}

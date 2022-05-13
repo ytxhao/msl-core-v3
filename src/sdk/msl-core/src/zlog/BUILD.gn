@@ -21,6 +21,7 @@ rtc_source_set("zlog") {
   public_deps = [
     "//third_party/curl:curl",
     "//third_party/spdlog:spdlog",
+    "//rtc_base:logging",
   ]
 }
 
