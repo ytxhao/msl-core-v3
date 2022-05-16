@@ -8,7 +8,7 @@
 import("//msl-core.gni")
 rtc_static_library("libmsl_static") {
   visibility = [ "*" ]
-  allow_poison = [ "audio_codecs", "default_task_queue" ]
+  # allow_poison = [ "audio_codecs", "default_task_queue" ]
 
   include_dirs = [
     "//sdk/msl-core/objc/api",

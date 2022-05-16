@@ -128,7 +128,7 @@ size_t thread_id()
 #endif
 }
 
-void msl_print(LoggingSeverity sev, const char* file_name, int line_num, const char* fmt, ...) {
+void msl_print(LoggingSeverity sev, const char* file, int line_num, const char* fmt, ...) {
   bool log_to_stderr = log_to_stderr_;
   char now[64];
   // int64_t start_time_ms = rtc::TimeUTCMillis();
@@ -136,11 +136,20 @@ void msl_print(LoggingSeverity sev, const char* file_name, int line_num, const c
   time_t currentMillis = currentMicros / kNumMicrosecsPerMillisec;
   time_t currentSeconds = currentMillis / 1000;
   struct std::tm *ttime;
+  char buf[2048] = {'\0'};
+  va_list args;
+  va_start(args, fmt); 
+  vsnprintf(buf, 2048, fmt, args);
+  va_end(args);
   ttime = localtime(&currentSeconds);
   std::strftime(now, 64, "%Y-%m-%d %H:%M:%S", ttime);
   std::stringstream ss;
-  ss << now;
-  std::string str(ss.str() + "." + std::to_string(currentMicros % 1000000) + " " + std::to_string(pid()) + "-" + std::to_string(thread_id()) + "\r\n");
+  const char *file_name_ptr = strrchr(file, '/');
+  std::string file_name(file_name_ptr ? file_name_ptr + 1 : file);
+  ss << now << "." << std::to_string(currentMicros % 1000000) 
+     << " " + std::to_string(pid()) << "-" << std::to_string(thread_id())
+     << " [" << file_name << ":" << line_num << "]: " << std::string(buf) << std::endl;
+  std::string str(ss.str());
   // std::string str("");
 #if defined(WEBRTC_MAC) && !defined(WEBRTC_IOS) && defined(NDEBUG)
   // On the Mac, all stderr output goes to the Console log and causes clutter.
@@ -208,7 +217,7 @@ void msl_print(LoggingSeverity sev, const char* file_name, int line_num, const c
   }
 #endif  // WEBRTC_ANDROID
   if (log_to_stderr) {
-    fprintf(stderr, "zorro: %s", str.c_str());
+    fprintf(stderr, "%s", str.c_str());
     fflush(stderr);
   }
 }

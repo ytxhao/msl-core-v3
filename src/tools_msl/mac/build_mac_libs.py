@@ -156,7 +156,7 @@ def BuildMslCore(output_dir, target_arch, flavor, gn_target_name,
 
     cmd = [
         os.path.join(DEPOT_TOOLS_PATH, 'ninja'),
-        # '-v',
+        '-v',
         '-C',
         output_dir,
         gn_target_name,

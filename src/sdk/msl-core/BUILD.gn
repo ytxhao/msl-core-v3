@@ -31,7 +31,7 @@ if (is_android) {
     deps = [
       "//third_party/spdlog:spdlog",
       "//third_party/curl:curl",
-      "./src:libmsl_static"
+      "//sdk/msl-core/src:libmsl_static"
     ]
     output_extension = "so"
   }
