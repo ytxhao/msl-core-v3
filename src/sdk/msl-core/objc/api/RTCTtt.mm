@@ -6,12 +6,15 @@
 //
 
 #import "RTCTtt.h"
+#import "sdk/msl-core/src/test.h"
 
 @implementation RTCTtt
 
 @synthesize connected = _connected;
 -(void)t {
      NSLog(@"123!");
+
+     test(4, 5);
 }
 
 - (instancetype)init {

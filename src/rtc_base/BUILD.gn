@@ -25,6 +25,12 @@ rtc_library("timeutils") {
 rtc_library("logging") {
   visibility = [ "*" ]
   libs = []
+  # cflags = [
+  #   "-Wno-global-constructors",
+  #   "-Wno-unused-parameter",
+  #   "-Wno-unused-private-field",
+  #   "-Wno-unused-variable"
+  # ]
   deps = [
     ":timeutils",
   ]

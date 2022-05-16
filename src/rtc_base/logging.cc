@@ -9,8 +9,48 @@
  */
 
 #include "rtc_base/logging.h"
+#include "rtc_base/time_utils.h"
 
 #include <string.h>
+
+#ifdef _WIN32
+
+#include <io.h>      // _get_osfhandle and _isatty support
+#include <process.h> //  _get_pid support
+#include <spdlog/details/windows_include.h>
+
+#ifdef __MINGW32__
+#include <share.h>
+#endif
+
+#if defined(SPDLOG_WCHAR_TO_UTF8_SUPPORT) || defined(SPDLOG_WCHAR_FILENAMES)
+#include <limits>
+#endif
+
+#include <direct.h> // for _mkdir/_wmkdir
+
+#else // unix
+
+#include <fcntl.h>
+#include <unistd.h>
+
+#ifdef __linux__
+#include <sys/syscall.h> //Use gettid() syscall under linux to get thread id
+
+#elif defined(_AIX)
+#include <pthread.h> // for pthread_getthreadid_np
+
+#elif defined(__DragonFly__) || defined(__FreeBSD__)
+#include <pthread_np.h> // for pthread_getthreadid_np
+
+#elif defined(__NetBSD__)
+#include <lwp.h> // for _lwp_self
+
+#elif defined(__sun)
+#include <thread.h> // for thr_self
+#endif
+
+#endif // unix
 
 #if RTC_LOG_ENABLED()
 
@@ -46,8 +86,62 @@ static const int kMaxLogLineSize = 1024 - 60;
 
 namespace rtc {
 
-void msl_print(LoggingSeverity sev, const char* file, int line, const char* fmt, ...) {
+bool log_to_stderr_ = true;
 
+void set_log_to_stderr(bool log_to_stderr) {
+  log_to_stderr_ = log_to_stderr;
+}
+
+int pid()
+{
+
+#ifdef _WIN32
+    return static_cast<int>(::GetCurrentProcessId());
+#else
+    return static_cast<int>(::getpid());
+#endif
+}
+
+size_t thread_id()
+{
+#ifdef _WIN32
+    return static_cast<size_t>(::GetCurrentThreadId());
+#elif defined(__linux__)
+#if defined(__ANDROID__) && defined(__ANDROID_API__) && (__ANDROID_API__ < 21)
+#define SYS_gettid __NR_gettid
+#endif
+    return static_cast<size_t>(::syscall(SYS_gettid));
+#elif defined(_AIX) || defined(__DragonFly__) || defined(__FreeBSD__)
+    return static_cast<size_t>(::pthread_getthreadid_np());
+#elif defined(__NetBSD__)
+    return static_cast<size_t>(::_lwp_self());
+#elif defined(__OpenBSD__)
+    return static_cast<size_t>(::getthrid());
+#elif defined(__sun)
+    return static_cast<size_t>(::thr_self());
+#elif __APPLE__
+    uint64_t tid;
+    pthread_threadid_np(nullptr, &tid);
+    return static_cast<size_t>(tid);
+#else // Default to standard C++11 (other Unix)
+    return static_cast<size_t>(std::hash<std::thread::id>()(std::this_thread::get_id()));
+#endif
+}
+
+void msl_print(LoggingSeverity sev, const char* file_name, int line_num, const char* fmt, ...) {
+  bool log_to_stderr = log_to_stderr_;
+  char now[64];
+  // int64_t start_time_ms = rtc::TimeUTCMillis();
+  int64_t currentMicros = rtc::TimeUTCMicros();
+  time_t currentMillis = currentMicros / kNumMicrosecsPerMillisec;
+  time_t currentSeconds = currentMillis / 1000;
+  struct std::tm *ttime;
+  ttime = localtime(&currentSeconds);
+  std::strftime(now, 64, "%Y-%m-%d %H:%M:%S", ttime);
+  std::stringstream ss;
+  ss << now;
+  std::string str(ss.str() + "." + std::to_string(currentMicros % 1000000) + " " + std::to_string(pid()) + "-" + std::to_string(thread_id()) + "\r\n");
+  // std::string str("");
 #if defined(WEBRTC_MAC) && !defined(WEBRTC_IOS) && defined(NDEBUG)
   // On the Mac, all stderr output goes to the Console log and causes clutter.
   // So in opt builds, don't log to stderr unless the user specifically sets
@@ -73,6 +167,7 @@ void msl_print(LoggingSeverity sev, const char* file, int line, const char* fmt,
   // need to map libjingle's severity levels to Android ones first.
   // Also write to stderr which maybe available to executable started
   // from the shell.
+  set_log_to_stderr(false);
   int prio;
   switch (sev) {
     case LS_VERBOSE:
