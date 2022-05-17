@@ -39,7 +39,7 @@ size_t curl_write_func(char *buffer,
 // #define RTC_ZLOG(sev, file, line)           \
 //   !rtc::LogMessage::IsNoop<::rtc::sev>() && \
 //       RTC_LOG_FILE_LINE(::rtc::sev, file, line)
-#define RTC_ZLOG(sev, file, line, fmt, ...) rtc::msl_print(::rtc::sev, file, line, fmt, ##__VA_ARGS__);
+#define RTC_ZLOG(sev, file, line, tag, fmt, ...) rtc::msl_print(::rtc::sev, file, line, tag, fmt, ##__VA_ARGS__);
 
 namespace zorro {
 
@@ -75,19 +75,19 @@ void ZlogKeyValue::Flush() {
   if ((type_mask_ & ZLOG_T) || (type_mask_ & ZLOG_F)) {
     switch (level_) {
       case ZLOG_LD:
-        if (type_mask_ & ZLOG_T) RTC_ZLOG(LS_VERBOSE, TAG, file_, line_, t_f_ss_.str().c_str());
+        if (type_mask_ & ZLOG_T) RTC_ZLOG(LS_VERBOSE, file_, line_, TAG, t_f_ss_.str().c_str());
         if (type_mask_ & ZLOG_F) spdlog::debug("{}", t_f_ss_.str());
         break;
       case ZLOG_LI:
-        if (type_mask_ & ZLOG_T) RTC_ZLOG(LS_INFO, TAG, file_, line_, t_f_ss_.str().c_str());
+        if (type_mask_ & ZLOG_T) RTC_ZLOG(LS_INFO, file_, line_, TAG, t_f_ss_.str().c_str());
         if (type_mask_ & ZLOG_F) spdlog::info("{}", t_f_ss_.str());
         break;
       case ZLOG_LW:
-        if (type_mask_ & ZLOG_T) RTC_ZLOG(LS_WARNING, TAG, file_, line_, t_f_ss_.str().c_str());
+        if (type_mask_ & ZLOG_T) RTC_ZLOG(LS_WARNING, file_, line_, TAG, t_f_ss_.str().c_str());
         if (type_mask_ & ZLOG_F) spdlog::warn("{}", t_f_ss_.str());
         break;
       case ZLOG_LE:
-        if (type_mask_ & ZLOG_T) RTC_ZLOG(LS_ERROR, TAG, file_, line_, t_f_ss_.str().c_str());
+        if (type_mask_ & ZLOG_T) RTC_ZLOG(LS_ERROR, file_, line_, TAG, t_f_ss_.str().c_str());
         if (type_mask_ & ZLOG_F) spdlog::error("{}", t_f_ss_.str());
         break;
       default:

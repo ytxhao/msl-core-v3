@@ -138,7 +138,7 @@ const char* FilenameFromPath(const char* file) {
     return (end1 > end2) ? end1 + 1 : end2 + 1;
 }
 
-void msl_print(LoggingSeverity sev, const char* tag, const char* file, int line_num, const char* fmt, ...) {
+void msl_print(LoggingSeverity sev, const char* file, int line_num, const char* tag, const char* fmt, ...) {
   bool log_to_stderr = log_to_stderr_;
   char now[64];
   // int64_t start_time_ms = rtc::TimeUTCMillis();
