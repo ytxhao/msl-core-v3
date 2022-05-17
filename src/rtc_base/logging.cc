@@ -128,7 +128,17 @@ size_t thread_id()
 #endif
 }
 
-void msl_print(LoggingSeverity sev, const char* file, int line_num, const char* fmt, ...) {
+// Return the filename portion of the string (that following the last slash).
+const char* FilenameFromPath(const char* file) {
+  const char* end1 = ::strrchr(file, '/');
+  const char* end2 = ::strrchr(file, '\\');
+  if (!end1 && !end2)
+    return file;
+  else
+    return (end1 > end2) ? end1 + 1 : end2 + 1;
+}
+
+void msl_print(LoggingSeverity sev, const char* tag, const char* file, int line_num, const char* fmt, ...) {
   bool log_to_stderr = log_to_stderr_;
   char now[64];
   // int64_t start_time_ms = rtc::TimeUTCMillis();
@@ -146,9 +156,28 @@ void msl_print(LoggingSeverity sev, const char* file, int line_num, const char* 
   std::stringstream ss;
   const char *file_name_ptr = strrchr(file, '/');
   std::string file_name(file_name_ptr ? file_name_ptr + 1 : file);
+
+  std::string prio;
+  switch (sev) {
+    case LS_VERBOSE:
+      prio = "V/";
+      break;
+    case LS_ZORRO:
+    case LS_INFO:
+      prio = "I/";
+      break;
+    case LS_WARNING:
+      prio = "W/";
+      break;
+    case LS_ERROR:
+      prio = "E/";
+      break;
+    default:
+      prio = "V/";
+  }
   ss << now << "." << std::to_string(currentMicros % 1000000) 
      << " " + std::to_string(pid()) << "-" << std::to_string(thread_id())
-     << " [" << file_name << ":" << line_num << "]: " << std::string(buf) << std::endl;
+     << " [" << file_name << ":" << line_num << "] " << prio << tag << ": "<< std::string(buf) << std::endl;
   std::string str(ss.str());
   // std::string str("");
 #if defined(WEBRTC_MAC) && !defined(WEBRTC_IOS) && defined(NDEBUG)
@@ -200,7 +229,6 @@ void msl_print(LoggingSeverity sev, const char* file, int line_num, const char* 
   int line = 0;
   int idx = 0;
   const int max_lines = size / kMaxLogLineSize + 1;
-  const char* tag = "msl";
   if (max_lines == 1) {
     __android_log_print(prio, tag, "%.*s", size, str.c_str());
   } else {
