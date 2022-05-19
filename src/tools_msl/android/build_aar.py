@@ -331,7 +331,7 @@ def BuildAar(archs,
                 os.makedirs(dist_lib_dir)
             shutil.copy(output_file, dist_lib_dir)
         dist_include_dir = os.path.normpath(os.path.join(MSL_APPLICATION_DIR,'msl-core','src','main','cpp','msl','include'))
-        src_include_dir = os.path.normpath(os.path.join(CORE_DIR,'src'))
+        src_include_dir = os.path.normpath(os.path.join(CORE_DIR,'src','public'))
         print("========dist_include_dir:"+dist_include_dir)
         print("========src_include_dir:"+src_include_dir)
         # 拷贝头文件

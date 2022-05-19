@@ -6,7 +6,7 @@
 //
 
 #import "RTCTtt.h"
-#import "sdk/msl-core/src/test.h"
+#import "sdk/msl-core/src/public/test.h"
 
 @implementation RTCTtt
 

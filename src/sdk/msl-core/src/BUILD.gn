@@ -26,7 +26,7 @@ rtc_static_library("libmsl_static") {
   # ]
 
   sources = [
-    "test.cc",
+    "public/test.cc",
     "http_request.cc"
   ]
 
