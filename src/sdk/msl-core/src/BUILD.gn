@@ -27,7 +27,8 @@ rtc_static_library("libmsl_static") {
 
   sources = [
     "public/test.cc",
-    "http_request.cc"
+    "http_request.cc",
+    "msl_manager.cc"
   ]
 
   deps = [

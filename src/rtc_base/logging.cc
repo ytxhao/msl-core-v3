@@ -177,7 +177,7 @@ void msl_print(LoggingSeverity sev, const char* file, int line_num, const char* 
   }
   ss << now << "." << std::to_string(currentMicros % 1000000) 
      << " " + std::to_string(pid()) << "-" << std::to_string(thread_id())
-     << " [" << file_name << ":" << line_num << "] " << prio << tag << ": "<< std::string(buf) << std::endl;
+     << " [" << file_name << ":" << line_num << "] " << prio << (tag == nullptr ? "msl" : tag)<< ": "<< std::string(buf) << std::endl;
   std::string str(ss.str());
   // std::string str("");
 #if defined(WEBRTC_MAC) && !defined(WEBRTC_IOS) && defined(NDEBUG)

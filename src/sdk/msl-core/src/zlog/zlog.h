@@ -27,7 +27,10 @@ namespace zorro {
 //               true, 将所有key-value整合成一个字符串，即key="msg", value=该字符串；
 //               false，包含多个key-value。
 #define ZLOG(type, level, one_key_msg, action) \
-  zorro::ZlogKeyValue(type, level, action, one_key_msg, __FILE__, __LINE__)
+  zorro::ZlogKeyValue(type, level, nullptr, action, one_key_msg, __FILE__, __LINE__)
+
+#define ZTLOG(type, level, tag, one_key_msg, action) \
+  zorro::ZlogKeyValue(type, level, tag, action, one_key_msg, __FILE__, __LINE__)
 
 // 标志一场log开始(比如ui进了房间),主要会影响actionId,trackId的统计,不影响log的上报
 #define ZKBLOG_CONFIG(uid, version) ZkbLog::Logger()->newTrack(uid, version);
@@ -78,9 +81,10 @@ class ZkbLog {
 
 class ZlogKeyValue {
  public:
-  ZlogKeyValue(int type_mask, int level, const char* action, bool one_key_msg, const char* file, int line)
+  ZlogKeyValue(int type_mask, int level, const char* tag, const char* action, bool one_key_msg, const char* file, int line)
       : type_mask_(type_mask),
         level_(level),
+        tag_(tag),
         file_(file),
         line_(line),
         one_key_msg_(one_key_msg),
@@ -91,7 +95,7 @@ class ZlogKeyValue {
       auto actionId = ZkbLog::Logger()->ActionId();
       curl_shared_ = context->curl_shared;
 
-      Append("app", "zorro", true);
+      Append("app", "msl", true);
       Append("ver", context->version, true);
       Append("appUid", context->userId, true);
       Append("trackId", context->trackId, true);
@@ -212,6 +216,7 @@ class ZlogKeyValue {
  private:
   int type_mask_;
   int level_;
+  const char* tag_;
   const char* file_;
   int line_;
   bool one_key_msg_;
