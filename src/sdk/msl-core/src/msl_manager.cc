@@ -5,6 +5,8 @@
 
 namespace zorro {
 
+MslManager* MslManager::instance_ = new MslManager();
+
 int MslManager::InitLog(const LogConfig& log_config) {
   InitZlog(log_config);
   return 1;
