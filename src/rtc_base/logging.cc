@@ -88,7 +88,7 @@ namespace rtc {
 
 bool log_to_stderr_ = true;
 
-void set_log_to_stderr(bool log_to_stderr) {
+void SetLogToStderr(bool log_to_stderr) {
   log_to_stderr_ = log_to_stderr;
 }
 
@@ -138,7 +138,7 @@ const char* FilenameFromPath(const char* file) {
     return (end1 > end2) ? end1 + 1 : end2 + 1;
 }
 
-void msl_print(LoggingSeverity sev, const char* file, int line_num, const char* tag, const char* fmt, ...) {
+void MslPrint(LoggingSeverity sev, const char* file, int line_num, const char* tag, const char* fmt, ...) {
   bool log_to_stderr = log_to_stderr_;
   char now[64];
   // int64_t start_time_ms = rtc::TimeUTCMillis();
@@ -205,7 +205,7 @@ void msl_print(LoggingSeverity sev, const char* file, int line_num, const char* 
   // need to map libjingle's severity levels to Android ones first.
   // Also write to stderr which maybe available to executable started
   // from the shell.
-  set_log_to_stderr(false);
+  SetLogToStderr(false);
   int prio;
   switch (sev) {
     case LS_VERBOSE:

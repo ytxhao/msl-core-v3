@@ -12,10 +12,11 @@ import filecmp
 
 
 SRC_DIR = SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-PROJECT_SRC_DIR = os.path.normpath(os.path.join(SCRIPT_DIR, os.pardir, os.pardir))
+PROJECT_SRC_DIR = os.path.normpath(os.path.join(SCRIPT_DIR))
 PROJECT_ROOT_DIR = os.path.normpath(os.path.join(PROJECT_SRC_DIR, os.pardir))
 
-MSL_DIR = os.path.join(SRC_DIR, 'sdk', 'msl')
+MSL_DIR = os.path.join(SRC_DIR, 'sdk', 'msl-core')
+MSL_SRC_DIR = os.path.join(MSL_DIR, 'src')
 OUTPUT_DIR = os.path.join(SRC_DIR, 'out')
 ENABLED_ARCHS = ['arm64', 'arm', 'x64']
 DEFAULT_ARCHS = ['arm64', 'arm']
@@ -23,6 +24,33 @@ MAC_SDK_BUILD_SCRIPT = SRC_DIR + "/tools_msl/mac/build_mac_libs.sh"
 IOS_SDK_BUILD_SCRIPT = SRC_DIR + "/tools_msl/ios/build_ios_libs.sh"
 ANDROID_SDK_BUILD_SCRIPT = SRC_DIR + "/tools_msl/android/build_aar.sh"
 LINUX_SDK_BUILD_SCRIPT = SRC_DIR + "/tools_msl/linux/build_linux_libs.sh"
+
+class GitRepo:
+    def __init__(self, name, direcotry):
+        self.name = name
+        self.dir = direcotry
+
+    def info(self):
+        branch_list = subprocess.check_output(["git", "branch"]).split('\n')
+        for branch in branch_list:
+            if branch[0] == "*":
+                curr_branch = branch.lstrip("* ")
+                break
+        print_title(self.name + " @ " + curr_branch)
+
+    def is_git_repo(self):
+        git_dir = os.path.normpath(os.path.join(self.dir, '.git'))
+        if os.path.exists(git_dir):
+            return True
+        else:
+            print("\033[31m" + self.dir + " is NOT a git root!\033[0m")
+            return False
+
+
+def print_title(title):
+    title = " " + title + " "
+    print("\033[32m" + "{0:=^90}".format(title) + "\033[0m")
+
 
 def clean_artifacts(output_dir):
     if os.path.isdir(output_dir):
@@ -86,6 +114,55 @@ def get_build_args(args):
     build_args = " ".join(i for i in build_arg_list)
     return build_args
 
+def gen_version_header(output_dir):
+    repos = [GitRepo("msl_sdk", PROJECT_ROOT_DIR)]
+    version_out = None
+    for repo in repos:
+        if os.path.exists(repo.dir):
+            if repo.is_git_repo():
+                os.chdir(repo.dir)
+                repo.info()
+                dev_null = open(os.devnull, 'w')
+                out = subprocess.call("git describe HEAD", shell=True, stdout=dev_null, stderr=dev_null)
+                if out == 0:
+                    out = subprocess.check_output("git describe HEAD", shell=True)
+                    if version_out:
+                        version_out = version_out + "-" + out.rstrip()
+                    else:
+                        version_out = out.rstrip()
+                else:
+                    branch = subprocess.check_output("git rev-parse --abbrev-ref HEAD", shell=True)
+                    branch = branch.rstrip()
+                    version = subprocess.check_output("git rev-parse --short HEAD", shell=True)
+                    version = version.rstrip()
+                    out = branch + '-' + version
+                    if version_out:
+                        version_out = version_out + "-" + out
+                    else:
+                        version_out = out
+        else:
+            print(repo.dir + "NOT exist.")
+
+    os.chdir(output_dir)
+    version_file_content = '#ifndef MSL_VERSION_H_\n#define MSL_VERSION_H_\n\n#define MSL_VERSION "'\
+                           + version_out + '"\n\n#endif'
+    tmp_version_file = "tmp_version.h"
+    version_file = "version.h"
+    fp = open(tmp_version_file, 'w')
+    fp.write(version_file_content)
+    fp.close() 
+    if os.path.exists(version_file):
+        if not filecmp.cmp(tmp_version_file, version_file, False):
+            os.remove(version_file)
+            os.rename(tmp_version_file, version_file)
+        else:
+            os.remove(tmp_version_file)
+            # print("Version header already up-to-update: " + version_out)
+    else:
+        os.rename(tmp_version_file, version_file)
+
+    print("\033[32mVersion: \033[0m" + version_out)
+
 def main():
     
     print("\033[32m SRC_DIR: \033[0m" + SRC_DIR)
@@ -103,6 +180,8 @@ def main():
     if args.clean:
         clean_artifacts(OUTPUT_DIR)
     
+    gen_version_header(MSL_SRC_DIR)
+
     if args.build == "r":
         build_config = "release"
     else:

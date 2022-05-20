@@ -39,9 +39,13 @@ size_t curl_write_func(char *buffer,
 // #define RTC_ZLOG(sev, file, line)           \
 //   !rtc::LogMessage::IsNoop<::rtc::sev>() && \
 //       RTC_LOG_FILE_LINE(::rtc::sev, file, line)
-#define RTC_ZLOG(sev, file, line, tag, fmt, ...) rtc::msl_print(::rtc::sev, file, line, tag, fmt, ##__VA_ARGS__);
+#define RTC_ZLOG(sev, file, line, tag, fmt, ...) rtc::MslPrint(::rtc::sev, file, line, tag, fmt, ##__VA_ARGS__);
 
 namespace zorro {
+
+void InitZlog(const LogConfig& log_config) {
+  ZKBLOG_CONFIG(log_config.user_id, log_config.msl_version, log_config.proxy_host_name, log_config.proxy_port);
+}
 
 std::string ZlogKeyValue::GetPrefixLogLevel() {
   // RTC_DCHECK(msg_ != nullptr);
@@ -115,12 +119,14 @@ ZkbLog::ZkbLog() : curl_(nullptr), loop_(true) {
   context_.drop = 0;
 }
 
-void ZkbLog::newTrack(const std::string& uid, const std::string& version) {
+void ZkbLog::newTrack(const std::string& uid, const std::string& version, const std::string& proxy_host_name, int proxy_port) {
   context_.userId = uid;
   context_.version = version;
   context_.actionId = 0;
   context_.drop = 0;
   context_.trackId = context_.trackId + 1;
+  context_.proxy_host_name = proxy_host_name;
+  context_.proxy_port = proxy_port;
 }
 
 int ZkbLog::ActionId() {

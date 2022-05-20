@@ -36,11 +36,12 @@ enum LoggingSeverity {
   LZORRO = LS_ZORRO
 };
 
-void set_log_to_stderr(bool log_to_stderr);
+void SetLogToStderr(bool log_to_stderr);
 #if RTC_LOG_ENABLED()
-void msl_print(LoggingSeverity sev, const char* file, int line, const char* tag, const char* fmt, ...);
+
+void MslPrint(LoggingSeverity sev, const char* file, int line, const char* tag, const char* fmt, ...);
 #else
-inline void void msl_print(LoggingSeverity sev, const char* file, int line, const char* tag, const char* fmt, ...) {
+inline void void MslPrint(LoggingSeverity sev, const char* file, int line, const char* tag, const char* fmt, ...) {
   // Do nothing, shouldn't be invoked
 }
 #endif

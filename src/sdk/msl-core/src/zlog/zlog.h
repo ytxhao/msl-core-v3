@@ -8,6 +8,7 @@
 #include <thread>
 
 #include "third_party/curl/include/curl/curl.h"
+#include "sdk/msl-core/src/msl_common.h"
 
 #define ZLOG_T   0x01 // output to terminal
 #define ZLOG_F   0x02 // output to file
@@ -33,7 +34,10 @@ namespace zorro {
   zorro::ZlogKeyValue(type, level, tag, action, one_key_msg, __FILE__, __LINE__)
 
 // 标志一场log开始(比如ui进了房间),主要会影响actionId,trackId的统计,不影响log的上报
-#define ZKBLOG_CONFIG(uid, version) ZkbLog::Logger()->newTrack(uid, version);
+#define ZKBLOG_CONFIG(uid, version, proxy_host_name, proxy_port) ZkbLog::Logger()->newTrack(uid, version, proxy_host_name, proxy_port);
+
+
+void InitZlog(const LogConfig& log_config);
 
 class ZlogKeyValue;
 class ZkbLog {
@@ -51,10 +55,12 @@ class ZkbLog {
     int drop;
     std::string userId;
     std::string version;
+    std::string proxy_host_name;
+    int proxy_port;
   };
 
  public:
-  void newTrack(const std::string& uid, const std::string& version);
+  void newTrack(const std::string& uid, const std::string& version, const std::string& proxy_host_name, int proxy_port);
   void SendMessage(const std::string& queries);
   Context* GetContext() { return &context_; }
   int ActionId();
