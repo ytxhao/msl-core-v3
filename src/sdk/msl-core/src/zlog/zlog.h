@@ -39,6 +39,8 @@ namespace zorro {
 
 void InitZlog(const LogConfig& log_config);
 
+void DeinitZlog();
+
 class ZlogKeyValue;
 class ZkbLog {
  public:

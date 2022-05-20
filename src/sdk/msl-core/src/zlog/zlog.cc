@@ -3,7 +3,7 @@
 // #include "rtc_base/net_helpers.h"
 #include "rtc_base/logging.h"
 #include "spdlog/spdlog.h"
-
+#include "spdlog/sinks/rotating_file_sink.h"
 #include <chrono>
 #include <functional>
 //#define TAG "zlog"
@@ -43,8 +43,40 @@ size_t curl_write_func(char *buffer,
 
 namespace zorro {
 
+static bool is_log_init = false;
 void InitZlog(const LogConfig& log_config) {
+  if (is_log_init) {
+    return;
+  }
   ZKBLOG_CONFIG(log_config.user_id, log_config.msl_version, log_config.proxy_host_name, log_config.proxy_port);
+  spdlog::set_level(spdlog::level::debug);
+  std::string normal_file;
+  if (log_config.encrypt) {
+      normal_file = log_config.path + "/normal/msl_normal_rotating.enc.log";
+  } else {
+      normal_file = log_config.path + "/normal/msl_normal_rotating.log";
+  }
+
+  try {
+    if (!log_config.path.empty()) {
+        auto file_logger = spdlog::rotating_logger_mt("file_logger", normal_file, 1024 * 1024 * 5, 3, log_config.encrypt);
+        file_logger->set_pattern("%Y-%m-%d %H:%M:%S.%e %P-%t %L/%v");
+        spdlog::set_default_logger(file_logger);
+        std::chrono::seconds s(3);
+        spdlog::flush_every(s);
+    }
+  } catch (const spdlog::spdlog_ex &ex) {
+    // ALOGE(TAG, "init_spdlog file_logger error what:%s file path:%s", ex.what(), path.c_str());
+  }
+  is_log_init = true;
+}
+
+void DeinitZlog() {
+  if (is_log_init) {
+    is_log_init = false;
+    spdlog::drop_all();
+  }
+  
 }
 
 std::string ZlogKeyValue::GetPrefixLogLevel() {
